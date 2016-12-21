@@ -2,18 +2,31 @@ module AST where
 
 import qualified Data.Map as Map
 import Data.Maybe
+import Data.Scientific
 -- We need to represent a variable name
 type Var = String
 
 data Expr
 
-    -- Constructors for "Boolean expression"
-    -- Omitting other kinds of simple expressions. You may add them back.
+    -- Boolean expression
     = FalseLit
     | TrueLit
     | Not Expr
     | And Expr Expr
     | Or Expr Expr
+    -- double
+    | Number Scientific
+    -- operator
+    | Add Expr Expr
+    | Sub Expr Expr
+    | Mult Expr Expr
+    | Div Expr Expr
+    -- compare operator
+    | Eq Expr Expr
+    | Lt Expr Expr
+    | Le Expr Expr
+    | Gt Expr Expr
+    | Ge Expr Expr
 
     -- Reference the value of a variable. If the variable doesn't exist, it's an error
     | VarRef Var
@@ -45,7 +58,7 @@ data Val
 
     -- If you support other kinds of expressions, add the cases by yourself
     = BoolVal Bool
-    | Double Int Int
+    | DoubleVal Double
     deriving (Show, Read, Eq)
 
 -- A memory is a mapping from variable names to values

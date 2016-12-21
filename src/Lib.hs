@@ -8,7 +8,7 @@ module Lib where
 import qualified Data.Map as Map
 import Data.Maybe
 import AST
-import Parser
+import Parser.Expr
 
 someFunc :: IO ()
 someFunc = putStrLn "HelloWo"
