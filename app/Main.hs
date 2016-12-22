@@ -1,6 +1,9 @@
-module Main where
+import Control.Monad
+import Data.Char
+import System.IO
 
-import Lib
-
-main :: IO ()
-main = someFunc
+main = forever $ do
+  putStr ">>> "
+  hFlush stdout
+  l <- getLine
+  putStrLn $ map toUpper l
