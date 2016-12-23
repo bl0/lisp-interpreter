@@ -1,8 +1,12 @@
+{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DeriveGeneric #-}
 module AST where
 
 import qualified Data.Map as Map
 import Data.Maybe
 import Data.Scientific
+import Text.PrettyPrint
+import Text.PrettyPrint.GenericPretty
 -- We need to represent a variable name
 type Var = String
 
@@ -30,7 +34,7 @@ data Expr
 
   -- Reference the value of a variable. If the variable doesn't exist, it's an error
   | VarRef Var
-  deriving (Show, Read)
+  deriving (Show, Read, Eq)
 
 data Stmt
 
@@ -48,7 +52,7 @@ data Stmt
 
   -- Skip out one level of "while" loop. It's an error if currently we are not in a loop
   | Skip
-  deriving (Show, Read)
+  deriving (Show, Read, Eq)
 
 -- A program is a single statement
 type Prog = Stmt

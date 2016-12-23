@@ -1,8 +1,20 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Main where
 
 import Control.Monad
 import Options.Applicative
+import qualified Data.Attoparsec.Text as AttoText
+import qualified Data.Text as Text
 import System.IO
+import System.Exit
+import qualified Data.Map as Map
+import qualified Text.PrettyPrint as PrettyPrint
+
+-- my module
+import Eval.Program
+import Parser.Program
+import AST
 
 data ArgOptions = ArgOptions
   { input :: String
@@ -35,27 +47,46 @@ argParser = ArgOptions
          <> long "repl"
          <> help "REPL mode")
 
-repl :: IO ()
-repl = forever $ do
+
+repl :: Stmt -> Mem -> Bool -> IO ()
+repl last_stmt mem has_history_instruction = do
   putStr "ki >>> "
-  hFlush stdout
+  hFlush stdout -- IMPORTANT
   input <- getLine
-  let inp = words input in
-    let cmd = (inp !! 0) in
-      case cmd of
-        ":i" -> putStrLn "i"
-        ":t" -> putStrLn "t"
-        otherwise -> putStrLn "wrong"
-  -- if inp == ":i" then
-  --   putStr "i"
-  -- else if inp == ":q" then
-  --   putStr "q"
-  -- else if inp ==
+  case words input of
+    [] -> putStr ""
+    -- excute the interpret
+    ":i":others -> let program = Text.pack $ unwords others in
+      let stmt_or_str = AttoText.parseOnly programParser program in do
+      case stmt_or_str of
+        -- syntax error
+        (Left str) -> do -- error handy
+          putStrLn $ "syntax error in interpret: " ++ Text.unpack program
+          repl last_stmt mem has_history_instruction
+        -- syntax right, eval the stmt, update stmt and memory, then run again
+        (Right stmt) -> do
+          let new_mem = eval stmt mem in do
+            putStrLn $ show $ new_mem
+            repl stmt new_mem True
+    -- output the parse result of last interpret
+    ":t":others -> do
+      if (has_history_instruction) then
+        putStrLn $ PrettyPrint.render $ PrettyPrint.text $ show last_stmt
+      else
+        putStrLn "No history instruction!"
+      repl last_stmt mem has_history_instruction
+    -- quit
+    "q":others -> do
+      putStrLn "Bye~"
+    -- command syntax error
+    otherwise -> do
+      putStrLn $ "syntax error in input: " ++ input ++ ". We only support :i :t and :q"
+      repl last_stmt mem has_history_instruction
 
 interpret :: ArgOptions -> IO ()
 interpret (ArgOptions _ _ _ True) = do
-  putStr "int"
-  repl
+  putStrLn "Enter REPL mode"
+  repl undefined Map.empty False
   return ()
 interpret _ = return ()
 
