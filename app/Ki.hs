@@ -10,11 +10,13 @@ import System.IO
 import System.Exit
 import qualified Data.Map as Map
 import qualified Text.PrettyPrint as PrettyPrint
+import qualified Text.PrettyPrint.GenericPretty as GenericPretty
 
 -- my module
 import Eval.Program
 import Parser.Program
 import AST
+import Memory
 
 data ArgOptions = ArgOptions
   { input :: String
@@ -66,12 +68,12 @@ repl last_stmt mem has_history_instruction = do
         -- syntax right, eval the stmt, update stmt and memory, then run again
         (Right stmt) -> do
           let new_mem = eval stmt mem in do
-            putStrLn $ show $ new_mem
+            mempp new_mem
             repl stmt new_mem True
     -- output the parse result of last interpret
     ":t":others -> do
       if (has_history_instruction) then
-        putStrLn $ PrettyPrint.render $ PrettyPrint.text $ show last_stmt
+        GenericPretty.pp last_stmt
       else
         putStrLn "No history instruction!"
       repl last_stmt mem has_history_instruction

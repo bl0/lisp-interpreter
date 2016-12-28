@@ -10,13 +10,6 @@ import AST
 import Parser.Base
 import Parser.Expr
 
-get_ast :: Either String Prog -> Prog
-get_ast (Right ast) = ast
-get_ast s = error $ "error in get_ast: the parse result is " ++ show(s)
-
-myParser :: Text -> Prog
-myParser s = get_ast $ parseOnly programParser s
-
 programParser :: Parser Stmt
 programParser = stmtParser
 

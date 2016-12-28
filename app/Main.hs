@@ -1,9 +1,6 @@
-import Control.Monad
-import Data.Char
-import System.IO
+module Main
+   where
 
-main = forever $ do
-  putStr ">>> "
-  hFlush stdout
-  l <- getLine
-  putStrLn $ map toUpper l
+import Memory
+main :: IO()
+main = undefined

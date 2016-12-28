@@ -7,8 +7,17 @@ import Data.Maybe
 import Data.Scientific
 import Text.PrettyPrint
 import Text.PrettyPrint.GenericPretty
--- We need to represent a variable name
-type Var = String
+
+-- my modules
+import Memory
+
+-- Scientific is not a Out instance, so we need to inplement it
+-- instance Generic Scientific where
+
+instance Out Scientific where
+  docPrec d s = text $ show s
+  doc = docPrec 0
+
 
 data Expr
 
@@ -34,7 +43,7 @@ data Expr
 
   -- Reference the value of a variable. If the variable doesn't exist, it's an error
   | VarRef Var
-  deriving (Show, Read, Eq)
+  deriving (Show, Read, Eq, Out, Generic)
 
 data Stmt
 
@@ -52,18 +61,10 @@ data Stmt
 
   -- Skip out one level of "while" loop. It's an error if currently we are not in a loop
   | Skip
-  deriving (Show, Read, Eq)
+  deriving (Show, Read, Eq, Out, Generic)
 
 -- A program is a single statement
 type Prog = Stmt
-
--- Different kinds of Expr evaluate to different Val
-data Val
-
-  -- If you support other kinds of expressions, add the cases by yourself
-  = BoolVal Bool
-  | ScientificVal Scientific
-  deriving (Show, Read, Eq, Ord)
 
 get_bool :: Val -> Bool
 get_bool (BoolVal b) = b
@@ -72,6 +73,3 @@ get_bool val = error $ "error: " ++ show(val) ++ "is not a BoolVal"
 get_scientific :: Val -> Scientific
 get_scientific (ScientificVal n) = n
 get_scientific val = error $ "error: " ++ show(val) ++ "is not a ScientificVal"
-
--- A memory is a mapping from variable names to values
-type Mem = Map.Map Var Val

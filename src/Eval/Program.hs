@@ -5,6 +5,8 @@ import Data.Maybe
 -- my module
 import AST
 import Eval.Expr
+import Memory
+
 
 -- Evaluation function
 -- Given an initial memory, execute program and return the memory afterwards

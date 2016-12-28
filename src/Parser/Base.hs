@@ -6,6 +6,8 @@ import Control.Applicative
 import Data.Attoparsec.Text
 -- my module
 import AST
+import Memory
+
 
 lexeme :: Parser a -> Parser a
 lexeme p = do

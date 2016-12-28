@@ -6,6 +6,7 @@ import Data.Maybe
 
 import AST
 import Parser.Expr
+import Memory
 
 eval_expr :: Expr -> Mem -> Val
 eval_expr FalseLit _ = BoolVal False
