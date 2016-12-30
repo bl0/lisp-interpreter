@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Parser.Expr where
+module Parser.Expr(exprParser) where
 
 import Control.Applicative
 import Data.Attoparsec.Text

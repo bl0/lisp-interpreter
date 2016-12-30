@@ -74,7 +74,7 @@ tuple2T tup = T (fst tup) (show $ snd tup)
 map2ColDesc :: Mem -> [T]
 map2ColDesc mem = map tuple2T (Map.toAscList mem)
 
-mempp :: Mem -> IO()
-mempp mem = putStrLn $ showTable [ ColDesc center "variable name"  left  var
+mempp :: Mem -> String
+mempp mem = showTable [ ColDesc center "variable name"  left  var
                      , ColDesc center "value" left  val
                      ] (map2ColDesc mem)

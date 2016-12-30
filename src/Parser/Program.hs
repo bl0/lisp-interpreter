@@ -4,14 +4,16 @@ module Parser.Program where
 
 import Control.Applicative
 import Data.Attoparsec.Text
-import Data.Text
+import qualified Data.Text as Text
+
+
 -- my module
 import AST
 import Parser.Base
 import Parser.Expr
 
-programParser :: Parser Stmt
-programParser = stmtParser
+programParser :: Text.Text -> Either String Stmt
+programParser = parseOnly stmtParser
 
 stmtParser :: Parser Stmt
 stmtParser =
@@ -25,7 +27,7 @@ stmtListParser :: Parser Stmt
 stmtListParser = do
   lexeme $ char '('
   lexeme $ string "begin"
-  stmtList <- lexeme $ many1 stmtListParser
+  stmtList <- many1 stmtParser
   lexeme $ char ')'
   return $ StmtList stmtList
 
@@ -46,6 +48,7 @@ skipParser = do
 ifParser :: Parser Stmt
 ifParser = do
   lexeme $ string "("
+  lexeme $ string "if"
   expr <- exprParser
   s1 <- stmtParser
   s2 <- stmtParser
@@ -55,7 +58,7 @@ ifParser = do
 whileParser :: Parser Stmt
 whileParser = do
   lexeme $ string "("
-  lexeme $ string "string"
+  lexeme $ string "while"
   expr <- exprParser
   s <- stmtParser
   lexeme $ string ")"

@@ -1,4 +1,4 @@
-module Eval.Expr where
+module Eval.Expr(eval_expr) where
 
 import qualified Data.Map as Map
 import Data.Scientific
@@ -33,10 +33,9 @@ eval_expr (Lt e1 e2) mem = BoolVal $ eval_expr e1 mem <  eval_expr e2 mem
 eval_expr (Le e1 e2) mem = BoolVal $ eval_expr e1 mem <= eval_expr e2 mem
 eval_expr (Gt e1 e2) mem = BoolVal $ eval_expr e1 mem >  eval_expr e2 mem
 eval_expr (Ge e1 e2) mem = BoolVal $ eval_expr e1 mem >= eval_expr e2 mem
-eval_expr (VarRef var) mem
-  | l == [] = error $ "error: var " ++ var ++ "does't exist in mem."
-  | otherwise = head $ l
-  where l = maybeToList $ Map.lookup var mem
+eval_expr (VarRef var) mem = case Map.lookup var mem of
+  Nothing -> error $ "error: var " ++ var ++ "does't exist in mem."
+  Just v  -> v
 -- scientific expr
 eval_expr (ScientificLit n) mem = ScientificVal n
 eval_expr (Add e1 e2)  mem =

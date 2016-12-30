@@ -2,7 +2,7 @@ name:                project
 version:             0.1.0.0
 synopsis:            Initial project template from stack
 description:         Please see README.md
-homepage:            https://github.com/githubuser/project#readme
+homepage:            git@github.com:b-liu14/haskell_project.git
 license:             BSD3
 license-file:        LICENSE
 author:              Kevin
@@ -12,10 +12,10 @@ category:            Web
 build-type:          Simple
 extra-source-files:  README.md
 cabal-version:       >=1.10
-
+--
 library
   hs-source-dirs:      src
-  exposed-modules:     Lib
+  exposed-modules:     FileIO
                      , AST
                      , Memory
                      , Eval.Expr
@@ -23,6 +23,9 @@ library
                      , Parser.Expr
                      , Parser.Base
                      , Parser.Program
+                     , Gen.Config
+                     , Gen.Expr
+                     , Gen.Program
   build-depends:       base >= 4.7 && < 5
                      , text
                      , attoparsec
@@ -44,17 +47,24 @@ executable ki
                      , optparse-applicative
                      , pretty
                      , GenericPretty
+                     , haskeline
   default-language:    Haskell2010
 
--- executable main
---   hs-source-dirs:      app
---   main-is:             Main.hs
---   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
---   build-depends:       base
---                      , project
---                      , hflags
---                      , optparse-applicative
---   default-language:    Haskell2010
+executable kc
+  hs-source-dirs:      app
+  main-is:             Kc.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  build-depends:       base
+                     , project
+                     , attoparsec
+                     , containers
+                     , text
+                     , optparse-applicative
+                     , pretty
+                     , GenericPretty
+                     , haskeline
+                     , mtl
+  default-language:    Haskell2010
 
 -- test-suite project-test
 --   type:                exitcode-stdio-1.0

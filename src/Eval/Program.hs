@@ -1,4 +1,4 @@
-module Eval.Program where
+module Eval.Program(eval) where
 
 import qualified Data.Map as Map
 import Data.Maybe
