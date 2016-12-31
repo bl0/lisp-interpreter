@@ -6,7 +6,7 @@ import qualified Data.Map as Map
 import AST
 
 op_gen :: String -> Expr -> Expr -> String
-op_gen op e1 e2 = "( " ++ gen_expr e1 ++ " " ++ op ++ " " ++ gen_expr e2 ++ " )"
+op_gen op e1 e2 = "(" ++ gen_expr e1 ++ " " ++ op ++ " " ++ gen_expr e2 ++ ")"
 
 gen_expr :: Expr -> String
 gen_expr FalseLit = "False"

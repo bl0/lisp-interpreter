@@ -1,23 +1,18 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
-import Data.Monoid
 import Test.Framework
 import Test.Framework.Providers.HUnit
 import Test.Framework.Providers.QuickCheck2
 import Test.HUnit
 import Test.QuickCheck
-import Test.QuickCheck.Arbitrary
 import Data.Attoparsec.Text
-import Data.Functor
 import qualified Data.Text as Text
-import Data.Scientific
 
 -- my modules
 import Parser.Expr
 import Parser.Program
 import AST
-import Memory
 import Common
 
 main :: IO ()
@@ -51,6 +46,7 @@ main = defaultMainWithOpts
 
 -- alias
 -- expression parser
+ep :: Text.Text -> Either String Expr
 ep = parseOnly Parser.Expr.exprParser
 
 testTrueParser :: Assertion

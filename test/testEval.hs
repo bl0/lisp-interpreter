@@ -2,18 +2,11 @@
 module Main where
 
 import qualified Data.Map as Map
-import Data.Monoid
 import Test.Framework
 import Test.Framework.Providers.HUnit
 import Test.Framework.Providers.QuickCheck2
 import Test.HUnit
 import Test.QuickCheck
-import Test.QuickCheck.Arbitrary
-import Data.Attoparsec.Text
-import Data.Functor
-import qualified Data.Text as Text
-import Data.Scientific
-import Data.Char
 
 -- my modules
 import AST
@@ -105,12 +98,13 @@ testMultEval n1 n2 = True ==> scientificValEq result truth
     truth =  ScientificVal $ d2s $ n1 * n2
 
 -- issue: forever loop when we use n1 and n2
-testDivEval :: Double -> Double -> Property
-testDivEval n1 n2 = True ==> scientificValEq result truth
+testDivEval :: Int -> Int -> Property
+testDivEval _ _ = True ==> scientificValEq result truth
   where
     result = ee $ Div (ScientificLit 2) (ScientificLit 2)
-    -- result = ee $ Div (d2slit n1) (d2slit n2)
     truth =  ScientificVal $ 1
+    -- result = ee $ Div (i2slit n1) (i2slit n2)
+    -- truth =  ScientificVal $ (i2s n1 / i2s n2)
 
 testEQEval :: Double -> Double -> Property
 testEQEval n1 n2 = True ==> result == truth
