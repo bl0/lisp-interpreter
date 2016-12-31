@@ -133,7 +133,7 @@ leParser = do
   expr1 <- exprParser
   expr2 <- exprParser
   lexeme $ char ')'
-  return (Sub expr1 expr2)
+  return (Le expr1 expr2)
 
 gtParser :: Parser Expr
 gtParser = do
