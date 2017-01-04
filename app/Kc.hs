@@ -67,7 +67,7 @@ parseOption = ph <|> p0 <|> p1 where
 helpMessage ="\n"
   ++ "Usage: kc [INPUT] [-o OUTPUT] [-h] \n"
   ++ "example:\n"
-  ++ "  kc input.txt -o output.py"
+  ++ "  kc input.txt -o output.py\n"
   ++ "Avaliable options:\n"
   ++ "  -o   path to output\n"
   ++ "  -h   show this help message\n"

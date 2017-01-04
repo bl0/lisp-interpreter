@@ -77,7 +77,7 @@ show_tree last_stmt mem = do
 
 repl :: Maybe Stmt -> Mem -> InputT IO ()
 repl last_stmt mem = do
-  minput <- runInputT defaultSettings $ getInputLine "ki >>> "
+  minput <- getInputLine "ki >>> "
   case minput of
     Nothing -> return ()
     Just input -> do

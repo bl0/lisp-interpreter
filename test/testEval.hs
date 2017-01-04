@@ -22,7 +22,9 @@ main = defaultMainWithOpts
          testCase "Expr.True" testTrueEval
        , testCase "Expr.False" testFalseEval
        , testCase "Expr.Not" testNotEval
+       , testCase "Expr.Not'" testNotEval'
        , testCase "Expr.And" testAndEval
+       , testCase "Expr.And'" testAndEval'
        , testCase "Expr.Or" testOrEval
        , testProperty "Expr.Number" testNumberEval
        , testProperty "Expr.Add" testAddEval
@@ -67,8 +69,14 @@ testFalseEval = ee FalseLit @?= BoolVal False
 testNotEval :: Assertion
 testNotEval = ee (Not FalseLit) @?= BoolVal True
 
+testNotEval' :: Assertion
+testNotEval' = ee (Not TrueLit) @?= BoolVal False
+
 testAndEval :: Assertion
 testAndEval = ee (And TrueLit FalseLit) @?= BoolVal False
+
+testAndEval' :: Assertion
+testAndEval' = ee (And TrueLit TrueLit) @?= BoolVal True
 
 testOrEval :: Assertion
 testOrEval = ee (Or TrueLit FalseLit) @?= BoolVal True

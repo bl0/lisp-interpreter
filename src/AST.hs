@@ -18,7 +18,6 @@ instance Out Scientific where
   docPrec d s = text $ show s
   doc = docPrec 0
 
-
 data Expr
 
   -- Boolean expression
