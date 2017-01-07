@@ -1,30 +1,60 @@
 module Memory (
     Var
-  , Val(BoolVal, ScientificVal)
+  , Val(..)
   , Mem
   , mempp
+  , get_bool
+  , get_scientific
+  , get_list
+  , get_vec
+  , get_int
   )where
 
 import qualified Data.Map as Map
 import Data.List (transpose, intercalate)
 import Data.Scientific
+import qualified Data.Vector as Vector
 
 
 -- We need to represent a variable name
 type Var = String
-
+type Vec = Vector.Vector Val
 -- Different kinds of Expr evaluate to different Val
 data Val
 
   -- If you support other kinds of expressions, add the cases by yourself
   = BoolVal Bool
   | ScientificVal Scientific
+  | ListVal [Val]
+  | CharVal Char
+  | VectorVal Vec
+  | Undefined
   deriving (Show, Read, Eq, Ord)
 
 -- A memory is a mapping from variable names to values
 type Mem = Map.Map Var Val
 
+get_bool :: Val -> Bool
+get_bool (BoolVal b) = b
+get_bool val = error $ "error: " ++ show(val) ++ "is not a BoolVal"
 
+get_scientific :: Val -> Scientific
+get_scientific (ScientificVal n) = n
+get_scientific val = error $ "error: " ++ show(val) ++ "is not a ScientificVal"
+
+get_int :: Val -> Int
+get_int (ScientificVal n) = case floatingOrInteger n of
+  (Left f) -> error $ "error: " ++ show(n) ++ "is a float."
+  (Right n) -> n
+get_int val = error $ "error: " ++ show(val) ++ "is not a integer."
+
+get_list :: Val -> [Val]
+get_list (ListVal l) = l
+get_list val = error $ "error: " ++ show(val) ++ "is not a ListVal"
+
+get_vec :: Val -> Vec
+get_vec (VectorVal vec) = vec
+get_vec val = error $ "error: " ++ show(val) ++ "is not a VectorVal"
 
 -- pretty printer
 -- a type for records

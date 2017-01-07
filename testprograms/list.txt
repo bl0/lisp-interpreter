@@ -1,0 +1,11 @@
+(begin
+  (set! variable
+    (cons True
+      (cons 233 nil)
+    )
+  )
+  (set! CAR (car variable))
+  (set! CDR (cdr variable))
+  (set! c 'c')
+  (set! s "string")
+)

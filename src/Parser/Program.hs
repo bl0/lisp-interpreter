@@ -21,7 +21,9 @@ stmtParser =
   varSetParser <|>
   skipParser <|>
   ifParser <|>
-  whileParser
+  whileParser <|>
+  makeVectorParser <|>
+  vectorSetParser
 
 stmtListParser :: Parser Stmt
 stmtListParser = do
@@ -63,3 +65,22 @@ whileParser = do
   s <- stmtParser
   lexeme $ string ")"
   return $ While expr s
+
+makeVectorParser :: Parser Stmt
+makeVectorParser = do
+  lexeme $ string "("
+  lexeme $ string "make-vector"
+  var <- varParser
+  expr <- exprParser
+  lexeme $ string ")"
+  return $ MakeVector var expr
+
+vectorSetParser :: Parser Stmt
+vectorSetParser = do
+  lexeme $ string "("
+  lexeme $ string "vector-set!"
+  var <- varParser
+  expr1 <- exprParser
+  expr2 <- exprParser
+  lexeme $ string ")"
+  return $ VectorSet var expr1 expr2

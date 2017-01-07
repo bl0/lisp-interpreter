@@ -1,7 +1,7 @@
 module Eval.Expr(eval_expr) where
 
 import qualified Data.Map as Map
-
+import qualified Data.Vector as Vector
 import AST
 import Memory
 
@@ -52,3 +52,29 @@ eval_expr (Div e1 e2)  mem =
   let v1 = get_scientific $ eval_expr e1 mem in
   let v2 = get_scientific $ eval_expr e2 mem in
   ScientificVal $ v1 / v2
+-- list and String
+eval_expr Nil _ = ListVal []
+eval_expr (Cons e1 e2) mem =
+  let v1 = eval_expr e1 mem in
+  let v2 = get_list $ eval_expr e2 mem in
+  ListVal $ v1 : v2
+eval_expr (Car e) mem
+  | v == ListVal [] = error $ "error when trying to get head of empty list."
+  | otherwise = head $ get_list v
+  where v = eval_expr e mem
+eval_expr (Cdr e) mem
+  | v == ListVal [] = error $ "error when trying to get tail of empty list."
+  | otherwise = ListVal $ tail $ get_list v
+  where v = eval_expr e mem
+eval_expr (CharLit c) mem = CharVal c
+eval_expr (StringLit s) mem
+  | s == "" = ListVal []
+  | otherwise = eval_expr (Cons (CharLit $ head s) (StringLit $ tail s)) mem
+-- vector
+eval_expr (VectorRef var e) mem
+  | index < 0 = error $ "index should not less than 0."
+  | index >= (Vector.length vec) = error $ "index out of range: index is " ++ show(index) ++ " while length of " ++ show(vec) ++ " is " ++ show(Vector.length vec)
+  | otherwise = vec Vector.! index 
+  where
+    vec = get_vec $ eval_expr (VarRef var) mem
+    index = get_int $ eval_expr e mem

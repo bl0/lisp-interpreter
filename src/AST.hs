@@ -42,6 +42,16 @@ data Expr
 
   -- Reference the value of a variable. If the variable doesn't exist, it's an error
   | VarRef Var
+
+  -- String and List
+  | Nil
+  | Cons Expr Expr
+  | Car Expr
+  | Cdr Expr
+  | CharLit Char
+  | StringLit String
+  -- Array
+  | VectorRef Var Expr
   deriving (Show, Read, Eq, Out, Generic)
 
 data Stmt
@@ -60,15 +70,11 @@ data Stmt
 
   -- Skip out one level of "while" loop. It's an error if currently we are not in a loop
   | Skip
+
+  -- Vector
+  | MakeVector Var Expr
+  | VectorSet Var Expr Expr
   deriving (Show, Read, Eq, Out, Generic)
 
 -- A program is a single statement
 type Prog = Stmt
-
-get_bool :: Val -> Bool
-get_bool (BoolVal b) = b
-get_bool val = error $ "error: " ++ show(val) ++ "is not a BoolVal"
-
-get_scientific :: Val -> Scientific
-get_scientific (ScientificVal n) = n
-get_scientific val = error $ "error: " ++ show(val) ++ "is not a ScientificVal"

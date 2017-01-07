@@ -1,0 +1,7 @@
+(begin
+  (make-vector variable 3)
+  (vector-set! variable 2 True)
+  (set! a
+    (vector-ref variable 2)
+  )
+)

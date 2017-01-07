@@ -4,6 +4,7 @@ module Parser.Expr(exprParser) where
 
 import Control.Applicative
 import Data.Attoparsec.Text
+import qualified Data.Text as Text
 import Data.Functor
 -- my module
 import AST
@@ -31,6 +32,15 @@ exprParser =
   leParser <|>
   gtParser <|>
   geParser <|>
+  -- String && List
+  nilParser <|>
+  consParser <|>
+  carParser <|>
+  cdrParser <|>
+  charParser <|>
+  stringParser <|>
+  -- vector
+  vectorRefParser <|>
   -- var
   varExprParser
 falseParser :: Parser Expr
@@ -157,3 +167,57 @@ varExprParser :: Parser Expr
 varExprParser = do
   v <- varParser
   return $ VarRef v
+
+nilParser :: Parser Expr
+nilParser = do
+  lexeme $ string "nil"
+  return Nil
+
+consParser :: Parser Expr
+consParser = do
+  lexeme $ string "("
+  lexeme $ string "cons"
+  expr1 <- exprParser
+  expr2 <- exprParser
+  lexeme $ char ')'
+  return (Cons expr1 expr2)
+
+carParser :: Parser Expr
+carParser = do
+  lexeme $ string "("
+  lexeme $ string "car"
+  expr1 <- exprParser
+  lexeme $ char ')'
+  return (Car expr1)
+
+cdrParser :: Parser Expr
+cdrParser = do
+  lexeme $ string "("
+  lexeme $ string "cdr"
+  expr1 <- exprParser
+  lexeme $ char ')'
+  return (Cdr expr1)
+
+charParser :: Parser Expr
+charParser = do
+  lexeme $ char '\''
+  c <- anyChar
+  lexeme $ char '\''
+  return (CharLit c)
+
+stringParser :: Parser Expr
+stringParser = do
+  lexeme $ char '\"'
+  -- TODO buggy
+  s <- takeTill (\c -> c == '\"')
+  lexeme $ char '\"'
+  return (StringLit $ Text.unpack s)
+
+vectorRefParser :: Parser Expr
+vectorRefParser = do
+  lexeme $ string "("
+  lexeme $ string "vector-ref"
+  var <- varParser
+  expr <- exprParser
+  lexeme $ char ')'
+  return (VectorRef var expr)
