@@ -7,12 +7,17 @@ import Data.Maybe
 import Data.Scientific
 import Text.PrettyPrint
 import Text.PrettyPrint.GenericPretty
+import qualified Data.Vector as Vector
 
 -- my modules
-import Memory
+-- import Memory
 
 -- Scientific is not a Out instance, so we need to inplement it
 -- instance Generic Scientific where
+
+-- We need to represent a variable name
+type Var = String
+type FuncName = String
 
 instance Out Scientific where
   docPrec d s = text $ show s
@@ -54,7 +59,7 @@ data Expr
   | VectorRef Var Expr
   -- Function Call
   | Call FuncName [Expr]
-  deriving (Show, Read, Eq, Out, Generic)
+  deriving (Show, Read, Eq, Ord, Out, Generic)
 
 data Stmt
 
@@ -78,10 +83,10 @@ data Stmt
   | VectorSet Var Expr Expr
   -- Function
   | Return Expr
-  deriving (Show, Read, Eq, Out, Generic)
+  deriving (Show, Read, Eq, Ord, Out, Generic)
 
 -- Function
 data Function = Function FuncName [Var] Stmt
   deriving (Show, Read, Eq, Out, Generic)
 -- A program is a single statement
-type Prog = Stmt
+type Prog = [Function]

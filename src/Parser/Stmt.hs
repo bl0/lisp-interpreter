@@ -15,12 +15,12 @@ import Parser.Expr
 stmtParser :: Parser Stmt
 stmtParser =
   stmtListParser
-  <|> varSetParser 
-  <|> skipParser 
-  <|> ifParser 
-  <|> whileParser 
-  <|> makeVectorParser 
-  <|> vectorSetParser 
+  <|> varSetParser
+  <|> skipParser
+  <|> ifParser
+  <|> whileParser
+  <|> makeVectorParser
+  <|> vectorSetParser
   <|> returnParser
 
 stmtListParser :: Parser Stmt

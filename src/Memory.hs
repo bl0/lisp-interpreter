@@ -3,24 +3,25 @@ module Memory (
   , Val(..)
   , Mem
   , FuncName
+  , memLookup
   , mempp
   , get_bool
   , get_scientific
   , get_list
   , get_vec
   , get_int
+  , get_varList
+  , get_stmt
   )where
 
 import qualified Data.Map as Map
 import Data.List (transpose, intercalate)
 import Data.Scientific
 import qualified Data.Vector as Vector
+import AST
 
-
--- We need to represent a variable name
-type Var = String
 type Vec = Vector.Vector Val
-type FuncName = String
+
 -- Different kinds of Expr evaluate to different Val
 data Val
 
@@ -31,10 +32,16 @@ data Val
   | CharVal Char
   | VectorVal Vec
   | Undefined
+  | FunctionVal [Var] Stmt
   deriving (Show, Read, Eq, Ord)
 
 -- A memory is a mapping from variable names to values
 type Mem = Map.Map Var Val
+
+memLookup :: String -> Mem -> Val
+memLookup var mem = case Map.lookup var mem of
+  Nothing -> error $ "error: var " ++ var ++ " does not exist in mem."
+  Just v  -> v
 
 get_bool :: Val -> Bool
 get_bool (BoolVal b) = b
@@ -57,6 +64,15 @@ get_list val = error $ "error: " ++ show(val) ++ "is not a ListVal"
 get_vec :: Val -> Vec
 get_vec (VectorVal vec) = vec
 get_vec val = error $ "error: " ++ show(val) ++ "is not a VectorVal"
+
+get_varList :: Val -> [Var]
+get_varList (FunctionVal varList _) = varList
+get_varList val = error $ "error: " ++ show(val) ++ "is not a FunctionVal"
+
+get_stmt :: Val -> Stmt
+get_stmt (FunctionVal _ stmt) = stmt
+get_stmt val = error $ "error: " ++ show(val) ++ "is not a FunctionVal"
+
 
 -- pretty printer
 -- a type for records

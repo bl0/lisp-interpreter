@@ -76,17 +76,17 @@ bopExprParser = do
   expr2 <- exprParser
   lexeme $ char ')'
   case op of
-    "and" -> return (And expr1 expr2)
-    "or" -> return (Or expr1 expr2)
-    "+"   -> return (Add expr1 expr2)
-    "-"   -> return (Sub expr1 expr2)
-    "*"   -> return (Mult expr1 expr2)
-    "/"   -> return (Div expr1 expr2)
-    "="   -> return (Eq expr1 expr2)
-    "<"   -> return (Lt expr1 expr2)
-    "<="  -> return (Le expr1 expr2)
-    ">"   -> return (Gt expr1 expr2)
-    ">="  -> return (Ge expr1 expr2)
+    "and"  -> return (And expr1 expr2)
+    "or"   -> return (Or expr1 expr2)
+    "+"    -> return (Add expr1 expr2)
+    "-"    -> return (Sub expr1 expr2)
+    "*"    -> return (Mult expr1 expr2)
+    "/"    -> return (Div expr1 expr2)
+    "="    -> return (Eq expr1 expr2)
+    "<"    -> return (Lt expr1 expr2)
+    "<="   -> return (Le expr1 expr2)
+    ">"    -> return (Gt expr1 expr2)
+    ">="   -> return (Ge expr1 expr2)
     "cons" -> return (Cons expr1 expr2)
 
 numberParser :: Parser Expr

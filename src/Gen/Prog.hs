@@ -26,5 +26,6 @@ gen_stmt ident (While expr stmt) = e ++ s
     s = gen_stmt (ident+1) stmt
 gen_stmt ident Skip = gen_newline ident "pass"
 
+-- TODO
 gen_program :: Prog -> String
-gen_program program = gen_stmt 0 program
+gen_program program = undefined -- gen_stmt 0 program

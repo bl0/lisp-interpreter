@@ -20,7 +20,6 @@ library
                      , Memory
                      , Eval.Expr
                      , Eval.Stmt
-                     , Eval.Func
                      , Eval.Prog
                      , Parser.Base
                      , Parser.Expr
