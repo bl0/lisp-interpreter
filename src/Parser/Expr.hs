@@ -13,155 +13,86 @@ import Parser.Base
 exprParser :: Parser Expr
 exprParser =
   -- logic const
-  falseParser <|>
-  trueParser <|>
-  -- logic operator
-  notParser <|>
-  andParser <|>
-  orParser <|>
+  falseParser
+  <|> trueParser
+  -- unit operator expr parser
+  <|> uopExprParser
+  -- binary operator expr Parser
+  <|> bopExprParser
   -- double
-  numberParser <|>
-  -- operator
-  addParser <|>
-  subParser <|>
-  multParser <|>
-  divParser <|>
-  -- compare
-  eqParser <|>
-  ltParser <|>
-  leParser <|>
-  gtParser <|>
-  geParser <|>
+  <|> numberParser
   -- String && List
-  nilParser <|>
-  consParser <|>
-  carParser <|>
-  cdrParser <|>
-  charParser <|>
-  stringParser <|>
+  <|> nilParser
+  <|> charParser
+  <|> stringParser
   -- vector
-  vectorRefParser <|>
+  <|> vectorRefParser
   -- var
-  varExprParser
+  <|> varExprParser
+  -- function call
+  <|> callExprParser
+
 falseParser :: Parser Expr
 falseParser = lexeme $ string "False" $> FalseLit
 
 trueParser :: Parser Expr
 trueParser = lexeme $ string "True" $> TrueLit
 
-notParser :: Parser Expr
-notParser = do
+uopParser :: Parser Text.Text
+uopParser = string "not"
+  <|> "car"
+  <|> "cdr"
+
+uopExprParser :: Parser Expr
+uopExprParser = do
   lexeme $ char '('
-  lexeme $ string "not"
+  op <- lexeme $ uopParser
   expr <- exprParser
   lexeme $ char ')'
-  return (Not expr)
+  case op of
+    "not" -> return (Not expr)
+    "car" -> return (Car expr)
+    "cdr" -> return (Cdr expr)
 
-andParser :: Parser Expr
-andParser = do
+bopParser :: Parser Text.Text
+bopParser = string "and"
+  <|> string "or"
+  <|> string "+"
+  <|> string "-"
+  <|> string "*"
+  <|> string "/"
+  <|> string "="
+  <|> string "<="
+  <|> string "<"
+  <|> string ">="
+  <|> string ">"
+  <|> string "cons"
+
+bopExprParser :: Parser Expr
+bopExprParser = do
   lexeme $ char '('
-  lexeme $ string "and"
+  op <- lexeme $ bopParser
   expr1 <- exprParser
   expr2 <- exprParser
   lexeme $ char ')'
-  return (And expr1 expr2)
-
-orParser :: Parser Expr
-orParser = do
-  lexeme $ char '('
-  lexeme $ string "or"
-  expr1 <- exprParser
-  expr2 <- exprParser
-  lexeme $ char ')'
-  return (Or expr1 expr2)
-
+  case op of
+    "and" -> return (And expr1 expr2)
+    "or" -> return (Or expr1 expr2)
+    "+"   -> return (Add expr1 expr2)
+    "-"   -> return (Sub expr1 expr2)
+    "*"   -> return (Mult expr1 expr2)
+    "/"   -> return (Div expr1 expr2)
+    "="   -> return (Eq expr1 expr2)
+    "<"   -> return (Lt expr1 expr2)
+    "<="  -> return (Le expr1 expr2)
+    ">"   -> return (Gt expr1 expr2)
+    ">="  -> return (Ge expr1 expr2)
+    "cons" -> return (Cons expr1 expr2)
 
 numberParser :: Parser Expr
 numberParser = do
   d1 <- lexeme $ scientific
   return $ ScientificLit d1
-
-
-addParser :: Parser Expr
-addParser = do
-  lexeme $ char '('
-  lexeme $ char '+'
-  expr1 <- exprParser
-  expr2 <- exprParser
-  lexeme $ char ')'
-  return (Add expr1 expr2)
-
-subParser :: Parser Expr
-subParser = do
-  lexeme $ char '('
-  lexeme $ string "-"
-  expr1 <- exprParser
-  expr2 <- exprParser
-  lexeme $ char ')'
-  return (Sub expr1 expr2)
-
-multParser :: Parser Expr
-multParser = do
-  lexeme $ char '('
-  lexeme $ string "*"
-  expr1 <- exprParser
-  expr2 <- exprParser
-  lexeme $ char ')'
-  return (Mult expr1 expr2)
-
-divParser :: Parser Expr
-divParser = do
-  lexeme $ char '('
-  lexeme $ string "/"
-  expr1 <- exprParser
-  expr2 <- exprParser
-  lexeme $ char ')'
-  return (Div expr1 expr2)
-
-eqParser :: Parser Expr
-eqParser = do
-  lexeme $ char '('
-  lexeme $ string "="
-  expr1 <- exprParser
-  expr2 <- exprParser
-  lexeme $ char ')'
-  return (Eq expr1 expr2)
-
-ltParser :: Parser Expr
-ltParser = do
-  lexeme $ char '('
-  lexeme $ string "<"
-  expr1 <- exprParser
-  expr2 <- exprParser
-  lexeme $ char ')'
-  return (Lt expr1 expr2)
-
-leParser :: Parser Expr
-leParser = do
-  lexeme $ char '('
-  lexeme $ string "<="
-  expr1 <- exprParser
-  expr2 <- exprParser
-  lexeme $ char ')'
-  return (Le expr1 expr2)
-
-gtParser :: Parser Expr
-gtParser = do
-  lexeme $ char '('
-  lexeme $ string ">"
-  expr1 <- exprParser
-  expr2 <- exprParser
-  lexeme $ char ')'
-  return (Gt expr1 expr2)
-
-geParser :: Parser Expr
-geParser = do
-  lexeme $ char '('
-  lexeme $ string ">="
-  expr1 <- exprParser
-  expr2 <- exprParser
-  lexeme $ char ')'
-  return (Ge expr1 expr2)
 
 varExprParser :: Parser Expr
 varExprParser = do
@@ -169,34 +100,7 @@ varExprParser = do
   return $ VarRef v
 
 nilParser :: Parser Expr
-nilParser = do
-  lexeme $ string "nil"
-  return Nil
-
-consParser :: Parser Expr
-consParser = do
-  lexeme $ string "("
-  lexeme $ string "cons"
-  expr1 <- exprParser
-  expr2 <- exprParser
-  lexeme $ char ')'
-  return (Cons expr1 expr2)
-
-carParser :: Parser Expr
-carParser = do
-  lexeme $ string "("
-  lexeme $ string "car"
-  expr1 <- exprParser
-  lexeme $ char ')'
-  return (Car expr1)
-
-cdrParser :: Parser Expr
-cdrParser = do
-  lexeme $ string "("
-  lexeme $ string "cdr"
-  expr1 <- exprParser
-  lexeme $ char ')'
-  return (Cdr expr1)
+nilParser = lexeme $ string "nil" $> Nil
 
 charParser :: Parser Expr
 charParser = do
@@ -221,3 +125,11 @@ vectorRefParser = do
   expr <- exprParser
   lexeme $ char ')'
   return (VectorRef var expr)
+
+callExprParser :: Parser Expr
+callExprParser = do
+  lexeme $ string "("
+  funcname <- funcNameParser
+  exprList <- many' exprParser
+  lexeme $ char ')'
+  return (Call funcname exprList)

@@ -14,13 +14,14 @@ import Parser.Expr
 
 stmtParser :: Parser Stmt
 stmtParser =
-  stmtListParser <|>
-  varSetParser <|>
-  skipParser <|>
-  ifParser <|>
-  whileParser <|>
-  makeVectorParser <|>
-  vectorSetParser
+  stmtListParser
+  <|> varSetParser 
+  <|> skipParser 
+  <|> ifParser 
+  <|> whileParser 
+  <|> makeVectorParser 
+  <|> vectorSetParser 
+  <|> returnParser
 
 stmtListParser :: Parser Stmt
 stmtListParser = do
@@ -81,3 +82,11 @@ vectorSetParser = do
   expr2 <- exprParser
   lexeme $ string ")"
   return $ VectorSet var expr1 expr2
+
+returnParser :: Parser Stmt
+returnParser = do
+  lexeme $ string "("
+  lexeme $ string "return"
+  expr <- exprParser
+  lexeme $ string ")"
+  return $ Return expr

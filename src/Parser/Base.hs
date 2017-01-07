@@ -16,3 +16,6 @@ lexeme p = do
 
 varParser :: Parser Var
 varParser = lexeme $ many1 letter
+
+funcNameParser :: Parser FuncName
+funcNameParser = varParser

@@ -11,7 +11,7 @@ import qualified Data.Text as Text
 
 -- my modules
 import Parser.Expr
-import Parser.Program
+import Parser.Prog
 import AST
 import Common
 

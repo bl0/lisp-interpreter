@@ -12,3 +12,16 @@ import AST
 import Parser.Base
 import Parser.Expr
 import Parser.Stmt
+
+
+funcParser :: Parser Function
+funcParser = do
+  lexeme $ string "("
+  lexeme $ string "define"
+  lexeme $ string "("
+  funName <- varParser
+  varList <- many' funcNameParser
+  lexeme $ string ")"
+  stmt <- stmtParser
+  lexeme $ string ")"
+  return $ Function funName varList stmt

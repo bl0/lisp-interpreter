@@ -52,6 +52,8 @@ data Expr
   | StringLit String
   -- Array
   | VectorRef Var Expr
+  -- Function Call
+  | Call FuncName [Expr]
   deriving (Show, Read, Eq, Out, Generic)
 
 data Stmt
@@ -74,10 +76,12 @@ data Stmt
   -- Vector
   | MakeVector Var Expr
   | VectorSet Var Expr Expr
+  -- Function
+  | Return Expr
   deriving (Show, Read, Eq, Out, Generic)
 
 -- Function
-data Function = Function FunName [Var] Stmt
-
+data Function = Function FuncName [Var] Stmt
+  deriving (Show, Read, Eq, Out, Generic)
 -- A program is a single statement
 type Prog = Stmt

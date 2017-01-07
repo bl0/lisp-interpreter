@@ -12,7 +12,7 @@ import Test.QuickCheck
 import AST
 import Memory
 import Eval.Expr
-import Eval.Program
+import Eval.Prog
 import Common
 
 main :: IO ()
@@ -49,16 +49,16 @@ main = defaultMainWithOpts
 -- alias
 -- eval expression with empty memory
 ee :: Expr -> Val
-ee expr = Eval.Expr.eval_expr expr Map.empty
+ee expr = eval_expr expr Map.empty
 -- eval expression with singleton memory
 ee' :: Expr -> Var -> Double -> Val
-ee' expr var n = Eval.Expr.eval_expr expr (Map.singleton var $ d2sval n)
+ee' expr var n = eval_expr expr (Map.singleton var $ d2sval n)
 -- eval expression with empty memory
 es :: Prog -> Mem
-es prog = Eval.Program.eval prog Map.empty
+es prog = eval prog Map.empty
 -- eval statement with singleton memory
 es' :: Prog -> Var -> Val -> Mem
-es' prog var n = Eval.Program.eval prog (Map.singleton var n)
+es' prog var n = eval prog (Map.singleton var n)
 
 testTrueEval :: Assertion
 testTrueEval = ee TrueLit @?= BoolVal True
