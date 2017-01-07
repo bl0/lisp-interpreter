@@ -19,13 +19,19 @@ library
                      , AST
                      , Memory
                      , Eval.Expr
-                     , Eval.Program
-                     , Parser.Expr
+                     , Eval.Stmt
+                     , Eval.Func
+                     , Eval.Prog
                      , Parser.Base
-                     , Parser.Program
+                     , Parser.Expr
+                     , Parser.Stmt
+                     , Parser.Func
+                     , Parser.Prog
                      , Gen.Config
                      , Gen.Expr
-                     , Gen.Program
+                     , Gen.Stmt
+                     , Gen.Func
+                     , Gen.Prog
 
   build-depends:       base >= 4.7 && < 5
                      , text

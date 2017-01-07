@@ -76,5 +76,8 @@ data Stmt
   | VectorSet Var Expr Expr
   deriving (Show, Read, Eq, Out, Generic)
 
+-- Function
+data Function = Function FunName [Var] Stmt
+
 -- A program is a single statement
 type Prog = Stmt

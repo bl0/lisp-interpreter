@@ -1,4 +1,4 @@
-module Gen.Program
+module Gen.Prog
     (
     gen_program
     ) where

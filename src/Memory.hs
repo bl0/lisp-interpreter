@@ -2,6 +2,7 @@ module Memory (
     Var
   , Val(..)
   , Mem
+  , FunName
   , mempp
   , get_bool
   , get_scientific
@@ -19,6 +20,7 @@ import qualified Data.Vector as Vector
 -- We need to represent a variable name
 type Var = String
 type Vec = Vector.Vector Val
+type FunName = String
 -- Different kinds of Expr evaluate to different Val
 data Val
 

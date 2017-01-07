@@ -14,8 +14,8 @@ import qualified Text.PrettyPrint.GenericPretty as GenericPretty
 import System.Console.Haskeline
 
 -- my module
-import Eval.Program
-import Parser.Program
+import Eval.Prog
+import Parser.Prog
 import AST
 import Memory
 import FileIO

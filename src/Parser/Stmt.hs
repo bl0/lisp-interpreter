@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Parser.Program where
+module Parser.Stmt where
 
 import Control.Applicative
 import Data.Attoparsec.Text
@@ -11,9 +11,6 @@ import qualified Data.Text as Text
 import AST
 import Parser.Base
 import Parser.Expr
-
-programParser :: Text.Text -> Either String Stmt
-programParser = parseOnly stmtParser
 
 stmtParser :: Parser Stmt
 stmtParser =

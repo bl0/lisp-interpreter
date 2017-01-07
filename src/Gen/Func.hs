@@ -1,0 +1,1 @@
+module Gen.Func where
