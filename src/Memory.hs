@@ -12,6 +12,8 @@ module Memory (
   , get_int
   , get_varList
   , get_stmt
+  , func2tuple
+  , insertFunc
   )where
 
 import qualified Data.Map as Map
@@ -33,7 +35,16 @@ data Val
   | VectorVal Vec
   | Undefined
   | FunctionVal [Var] Stmt
-  deriving (Show, Read, Eq, Ord)
+  deriving (Read, Eq, Ord)
+
+instance Show Val where
+  show (BoolVal bool) = show bool
+  show (ScientificVal scientific) = show scientific
+  show (ListVal listVal) = show listVal
+  show (CharVal char) = show char
+  show (VectorVal vec) = show vec
+  show (Undefined) = "Undefined"
+  show (FunctionVal varList stmt) = show "Function " ++ show varList ++ " " ++ show stmt
 
 -- A memory is a mapping from variable names to values
 type Mem = Map.Map Var Val
@@ -73,7 +84,11 @@ get_stmt :: Val -> Stmt
 get_stmt (FunctionVal _ stmt) = stmt
 get_stmt val = error $ "error: " ++ show(val) ++ "is not a FunctionVal"
 
+func2tuple :: Func -> (FuncName, Val)
+func2tuple (Function name varList stmt) = (name, FunctionVal varList stmt)
 
+insertFunc :: Func -> Mem -> Mem
+insertFunc (Function name varList stmt) mem = Map.insert name (FunctionVal varList stmt) mem
 -- pretty printer
 -- a type for records
 data T = T { var  :: String

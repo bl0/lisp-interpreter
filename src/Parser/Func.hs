@@ -13,7 +13,7 @@ import Parser.Base
 import Parser.Expr
 import Parser.Stmt
 
-funcParser :: Parser Function
+funcParser :: Parser Func
 funcParser = do
   lexeme $ string "("
   lexeme $ string "define"

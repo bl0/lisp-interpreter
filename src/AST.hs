@@ -54,6 +54,7 @@ data Expr
   | Car Expr
   | Cdr Expr
   | CharLit Char
+  -- TODO show string
   | StringLit String
   -- Array
   | VectorRef Var Expr
@@ -86,7 +87,7 @@ data Stmt
   deriving (Show, Read, Eq, Ord, Out, Generic)
 
 -- Function
-data Function = Function FuncName [Var] Stmt
+data Func = Function FuncName [Var] Stmt
   deriving (Show, Read, Eq, Out, Generic)
 -- A program is a single statement
-type Prog = [Function]
+type Prog = [Func]

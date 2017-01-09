@@ -1,6 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Parser.Stmt where
+module Parser.Stmt
+(
+  stmtParser
+) where
 
 import Control.Applicative
 import Data.Attoparsec.Text

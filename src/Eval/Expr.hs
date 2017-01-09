@@ -36,7 +36,6 @@ eval_expr (Lt e1 e2) mem = BoolVal $ eval_expr e1 mem <  eval_expr e2 mem
 eval_expr (Le e1 e2) mem = BoolVal $ eval_expr e1 mem <= eval_expr e2 mem
 eval_expr (Gt e1 e2) mem = BoolVal $ eval_expr e1 mem >  eval_expr e2 mem
 eval_expr (Ge e1 e2) mem = BoolVal $ eval_expr e1 mem >= eval_expr e2 mem
--- TODO error handy
 
 eval_expr (VarRef var) mem = memLookup var mem
 -- scientific expr
@@ -97,9 +96,8 @@ eval_expr (VectorRef var e) mem
     index = get_int $ eval_expr e mem
 
 eval_expr (Call funcName exprList) mem =
--- TODO error prompt
   case Map.lookup funcName mem of
-    Nothing -> error $ show (mem)
+    Nothing -> error $ funcName ++ " is not a function. \nmemory: " ++ show (mem)
     Just func -> let
       varList = get_varList func
       stmt = get_stmt func

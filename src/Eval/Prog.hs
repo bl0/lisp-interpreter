@@ -6,10 +6,6 @@ import AST
 import Eval.Expr
 import Memory
 
-
-func2tuple :: Function -> (FuncName, Val)
-func2tuple (Function name varList stmt) = (name, FunctionVal varList stmt)
-
 -- Evaluation function
 -- Given an initial memory, execute program and return the memory afterwards
 eval :: Prog -> Mem -> Mem

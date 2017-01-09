@@ -143,7 +143,7 @@ testGeEval n1 n2 = True ==> result == truth
   where
     result = ee $ Ge (d2slit n1) (d2slit n2)
     truth =  BoolVal $ (n1 >= n2)
--- TODO
+
 testVarEval :: Var -> Double -> Property
 testVarEval var n = allLetter var ==> result == truth
   where
