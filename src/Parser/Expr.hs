@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Parser.Expr(exprParser) where
+module Parser.Expr(exprParser, expressionParser) where
 
 import Control.Applicative
 import Data.Attoparsec.Text
@@ -133,3 +133,6 @@ callExprParser = do
   exprList <- many' exprParser
   lexeme $ char ')'
   return (Call funcname exprList)
+
+expressionParser :: Text.Text -> Either String [Expr]
+expressionParser = parseOnly $ many1 exprParser
