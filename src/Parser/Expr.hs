@@ -27,6 +27,8 @@ exprParser =
   <|> stringParser
   -- vector
   <|> vectorRefParser
+  -- let
+  <|> letExprParser
   -- var
   <|> varExprParser
   -- function call
@@ -133,3 +135,13 @@ callExprParser = do
   exprList <- many' exprParser
   lexeme $ char ')'
   return (Call funcname exprList)
+
+letExprParser :: Parser Expr
+letExprParser = do
+  lexeme $ string "("
+  lexeme $ string "let"
+  var <- varParser
+  expr1 <- exprParser
+  expr2 <- exprParser
+  lexeme $ char ')'
+  return (Let var expr1 expr2)

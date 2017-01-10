@@ -30,7 +30,7 @@ eval_expr (Or e1 e2) mem
   where
     v1 = get_bool $ eval_expr e1 mem
     v2 = get_bool $ eval_expr e2 mem
--- TODO asume bool is smaller than scientific
+-- asume bool < scientific < ohter type of Val
 eval_expr (Eq e1 e2) mem = BoolVal $ eval_expr e1 mem == eval_expr e2 mem
 eval_expr (Lt e1 e2) mem = BoolVal $ eval_expr e1 mem <  eval_expr e2 mem
 eval_expr (Le e1 e2) mem = BoolVal $ eval_expr e1 mem <= eval_expr e2 mem
@@ -85,8 +85,8 @@ eval_expr (CharLit c) mem = CharVal c
 eval_expr (StringLit s) mem
   | s == "" = ListVal []
   | otherwise = eval_expr (Cons (CharLit $ head s) (StringLit $ tail s)) mem
--- vector
 
+-- vector
 eval_expr (VectorRef var e) mem
   | index < 0 = error $ "index should not less than 0."
   | index >= (Vector.length vec) = error $ "index out of range: index is " ++ show(index) ++ " while length of " ++ show(vec) ++ " is " ++ show(Vector.length vec)
@@ -95,6 +95,7 @@ eval_expr (VectorRef var e) mem
     vec = get_vec $ memLookup var mem
     index = get_int $ eval_expr e mem
 
+-- function call
 eval_expr (Call funcName exprList) mem =
   case Map.lookup funcName mem of
     Nothing -> error $ funcName ++ " is not a function. \nmemory: " ++ show (mem)
@@ -102,15 +103,24 @@ eval_expr (Call funcName exprList) mem =
       varList = get_varList func
       stmt = get_stmt func
       valList = map (\exprList -> eval_expr exprList mem) exprList
+      -- memory including function
       new_mem = Map.fromList $ zip varList valList
+      -- memory including function and var
       -- TODO more genieric method
       total_mem = Map.union new_mem mem
+      -- memory returned.
       ret_mem = eval_stmt stmt total_mem in
-      -- error $ show new_mem
       head $ Map.elems ret_mem
 
--- Evaluation function
+eval_expr (Let var expr1 expr2) mem =
+  let v1 = eval_expr expr1 mem
+      new_mem = Map.insert var v1 mem in
+      eval_expr expr2 new_mem
+
+
+-- Evaluation Statement.
 -- Given an initial memory, execute program and return the memory afterwards
+-- Because of recycling import, we can't make it a separator model.
 eval_stmt :: Stmt -> Mem -> Mem
 
 eval_stmt Skip mem = mem
