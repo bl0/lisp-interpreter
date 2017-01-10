@@ -2,26 +2,18 @@
 {-# LANGUAGE DeriveGeneric #-}
 module AST where
 
-import qualified Data.Map as Map
-import Data.Maybe
 import Data.Scientific
 import Text.PrettyPrint
 import Text.PrettyPrint.GenericPretty
-import qualified Data.Vector as Vector
 
 -- my modules
 -- import Memory
 
--- Scientific is not a Out instance, so we need to inplement it
--- instance Generic Scientific where
-
 -- We need to represent a variable name
 type Var = String
-type FuncName = String
 
-instance Out Scientific where
-  docPrec d s = text $ show s
-  doc = docPrec 0
+
+type FuncName = String
 
 data Expr
 
@@ -60,7 +52,18 @@ data Expr
   | VectorRef Var Expr
   -- Function Call
   | Call FuncName [Expr]
+  -- let
+  | Let Var Expr Expr
+  -- Lambda
+  | Lambda [Var] Expr
+  -- call Lambda
+  | LambdaCall Expr [Expr]
   deriving (Show, Read, Eq, Ord, Out, Generic)
+
+-- Scientific is not a Out instance, so we need to inplement it
+instance Out Scientific where
+  docPrec _ s = text $ show s
+  doc = docPrec 0
 
 data Stmt
 

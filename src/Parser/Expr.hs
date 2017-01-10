@@ -27,6 +27,11 @@ exprParser =
   <|> stringParser
   -- vector
   <|> vectorRefParser
+  -- let
+  <|> letExprParser
+  -- lambda
+  <|> lambdaExprParser
+  <|> lambdaCallExprParser
   -- var
   <|> varExprParser
   -- function call
@@ -134,5 +139,34 @@ callExprParser = do
   lexeme $ char ')'
   return (Call funcname exprList)
 
+
 expressionParser :: Text.Text -> Either String [Expr]
 expressionParser = parseOnly $ many1 exprParser
+
+letExprParser :: Parser Expr
+letExprParser = do
+  lexeme $ string "("
+  lexeme $ string "let"
+  var <- varParser
+  expr1 <- exprParser
+  expr2 <- exprParser
+  lexeme $ char ')'
+  return (Let var expr1 expr2)
+
+
+lambdaExprParser :: Parser Expr
+lambdaExprParser = do
+  lexeme $ string "("
+  lexeme $ string "lambda"
+  varList <- many' varParser
+  expr <- exprParser
+  lexeme $ char ')'
+  return (Lambda varList expr)
+
+lambdaCallExprParser :: Parser Expr
+lambdaCallExprParser = do
+  lexeme $ string "("
+  expr <- exprParser
+  exprList <- many' exprParser
+  lexeme $ char ')'
+  return $ LambdaCall expr exprList
