@@ -117,6 +117,15 @@ eval_expr (Let var expr1 expr2) mem =
       new_mem = Map.insert var v1 mem in
       eval_expr expr2 new_mem
 
+eval_expr (Lambda var expr) mem = LambdaVal var expr
+
+eval_expr (LambdaCall lambdaExpr expr) mem =
+  let val = eval_expr expr mem in
+  case eval_expr lambdaExpr mem of
+    (LambdaVal var exprInLambda) ->
+      eval_expr exprInLambda (Map.insert var val mem)
+    val -> error $ "error: " ++ show(val) ++ "is not a BoolVal"
+
 
 -- Evaluation Statement.
 -- Given an initial memory, execute program and return the memory afterwards

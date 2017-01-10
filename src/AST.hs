@@ -11,6 +11,8 @@ import Text.PrettyPrint.GenericPretty
 
 -- We need to represent a variable name
 type Var = String
+
+
 type FuncName = String
 
 data Expr
@@ -52,6 +54,10 @@ data Expr
   | Call FuncName [Expr]
   -- let
   | Let Var Expr Expr
+  -- Lambda
+  | Lambda Var Expr
+  -- call Lambda
+  | LambdaCall Expr Expr
   deriving (Show, Read, Eq, Ord, Out, Generic)
 
 -- Scientific is not a Out instance, so we need to inplement it

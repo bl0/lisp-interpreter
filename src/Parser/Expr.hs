@@ -29,6 +29,9 @@ exprParser =
   <|> vectorRefParser
   -- let
   <|> letExprParser
+  -- lambda
+  <|> lambdaExprParser
+  <|> lambdaCallExprParser
   -- var
   <|> varExprParser
   -- function call
@@ -145,3 +148,21 @@ letExprParser = do
   expr2 <- exprParser
   lexeme $ char ')'
   return (Let var expr1 expr2)
+
+
+lambdaExprParser :: Parser Expr
+lambdaExprParser = do
+  lexeme $ string "("
+  lexeme $ string "lambda"
+  var <- varParser
+  expr <- exprParser
+  lexeme $ char ')'
+  return (Lambda var expr)
+
+lambdaCallExprParser :: Parser Expr
+lambdaCallExprParser = do
+  lexeme $ string "("
+  expr1 <- exprParser
+  expr2 <- exprParser
+  lexeme $ char ')'
+  return $ LambdaCall expr1 expr2
