@@ -35,7 +35,7 @@ data Val
   | VectorVal Vec
   | Undefined
   | FunctionVal [Var] Stmt
-  | LambdaVal Var Expr
+  | LambdaVal [Var] Expr
   deriving (Read, Eq, Ord)
 
 instance Show Val where
@@ -46,7 +46,7 @@ instance Show Val where
   show (VectorVal vec) = show vec
   show (Undefined) = "Undefined"
   show (FunctionVal varList stmt) = "Function:\\ " ++ show varList ++ " -> " ++ show stmt
-  show (LambdaVal var expr) = "Anonymous_function:\\" ++ var ++ " -> " ++ show expr
+  show (LambdaVal varList expr) = "Anonymous_function:\\" ++ show varList ++ " -> " ++ show expr
 
 -- A memory is a mapping from variable names to values
 type Mem = Map.Map Var Val

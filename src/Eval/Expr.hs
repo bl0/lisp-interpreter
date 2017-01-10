@@ -99,14 +99,12 @@ eval_expr (VectorRef var e) mem
 eval_expr (Call funcName exprList) mem =
   case Map.lookup funcName mem of
     Nothing -> error $ funcName ++ " is not a function. \nmemory: " ++ show (mem)
-    Just func -> let
-      varList = get_varList func
-      stmt = get_stmt func
+    Just (FunctionVal varList stmt) -> let
       valList = map (\exprList -> eval_expr exprList mem) exprList
       -- memory including function
       new_mem = Map.fromList $ zip varList valList
       -- memory including function and var
-      -- TODO more genieric method
+      -- TODO more genieric method to merge function memory and param memory.
       total_mem = Map.union new_mem mem
       -- memory returned.
       ret_mem = eval_stmt stmt total_mem in
@@ -117,13 +115,18 @@ eval_expr (Let var expr1 expr2) mem =
       new_mem = Map.insert var v1 mem in
       eval_expr expr2 new_mem
 
-eval_expr (Lambda var expr) mem = LambdaVal var expr
+eval_expr (Lambda varList expr) mem = LambdaVal varList expr
 
-eval_expr (LambdaCall lambdaExpr expr) mem =
-  let val = eval_expr expr mem in
+eval_expr (LambdaCall lambdaExpr exprList) mem =
   case eval_expr lambdaExpr mem of
-    (LambdaVal var exprInLambda) ->
-      eval_expr exprInLambda (Map.insert var val mem)
+    (LambdaVal varList exprInLambda) -> let
+      valList = map (\expr -> eval_expr expr mem) exprList
+      -- memory including function
+      new_mem = Map.fromList $ zip varList valList
+      -- memory including function and var
+      -- TODO more genieric method to merge function memory and param memory.
+      total_mem = Map.union new_mem mem in
+      eval_expr exprInLambda total_mem
     val -> error $ "error: " ++ show(val) ++ "is not a BoolVal"
 
 

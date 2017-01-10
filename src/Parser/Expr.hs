@@ -154,15 +154,15 @@ lambdaExprParser :: Parser Expr
 lambdaExprParser = do
   lexeme $ string "("
   lexeme $ string "lambda"
-  var <- varParser
+  varList <- many' varParser
   expr <- exprParser
   lexeme $ char ')'
-  return (Lambda var expr)
+  return (Lambda varList expr)
 
 lambdaCallExprParser :: Parser Expr
 lambdaCallExprParser = do
   lexeme $ string "("
-  expr1 <- exprParser
-  expr2 <- exprParser
+  expr <- exprParser
+  exprList <- many' exprParser
   lexeme $ char ')'
-  return $ LambdaCall expr1 expr2
+  return $ LambdaCall expr exprList
