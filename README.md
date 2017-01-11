@@ -39,3 +39,7 @@
 4. 运行测试： `stack test`。如需单独测试parser或eval，则执行`stack test project:parser-test`或`stack test project:eval-test`。
 
 5. 运行测试覆盖率分析：`stack build; stack clean; stack test --coverage`
+
+## 例程
+
+见testprogram目录。

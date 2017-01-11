@@ -19,7 +19,6 @@ library
                      , AST
                      , Memory
                      , Eval.Expr
-                     , Eval.Stmt
                      , Eval.Prog
                      , Parser.Base
                      , Parser.Expr

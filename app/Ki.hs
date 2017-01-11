@@ -18,7 +18,6 @@ import System.Console.Haskeline
 -- my module
 import Eval.Prog
 import Eval.Expr
-import Eval.Stmt
 import Parser.Prog
 import Parser.Func
 import Parser.Stmt
@@ -140,7 +139,9 @@ repl history mem = do
     Nothing -> return ()
     Just input -> do
       case words input of
+        -- excute statement
         ":i":others -> excute_stmt history mem $ Text.pack $ unwords others
+        -- tree
         ":t":others -> show_tree history mem
         -- quit
         ":q":others -> outputStrLn "Bye~"
@@ -148,6 +149,8 @@ repl history mem = do
         ":f":others -> excute_func history mem $ Text.pack $ unwords others
         -- excute expression
         ":e":others -> excute_expr history mem $ Text.pack $ unwords others
+        -- help
+        ":h":others -> outputStrLn repl_help_message
         -- command syntax error
         otherwise -> do
           outputStrLn $ "syntax error in: " ++ input ++ ".\n" ++ repl_help_message
