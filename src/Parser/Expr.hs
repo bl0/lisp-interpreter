@@ -117,10 +117,21 @@ charParser = do
 stringParser :: Parser Expr
 stringParser = do
   lexeme $ char '\"'
-  -- TODO buggy
-  s <- takeTill (\c -> c == '\"')
+  s <- stringContentParser
   lexeme $ char '\"'
   return (StringLit $ Text.unpack s)
+  where
+    stringContentParser :: Parser Text.Text
+    stringContentParser = do
+      s <- takeTill (\c -> c == '\"')
+      case reverse $ Text.unpack s of
+        "" -> return s
+        '\\':xs -> do
+          c <- char '\"'
+          s' <- stringContentParser
+          return $ Text.concat [Text.init s, (Text.singleton c), s']
+        rs -> return s
+
 
 vectorRefParser :: Parser Expr
 vectorRefParser = do
@@ -148,7 +159,6 @@ letExprParser = do
   expr2 <- exprParser
   lexeme $ char ')'
   return (Let var expr1 expr2)
-
 
 lambdaExprParser :: Parser Expr
 lambdaExprParser = do

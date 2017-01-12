@@ -41,7 +41,15 @@ data Val
 instance Show Val where
   show (BoolVal bool) = show bool
   show (ScientificVal scientific) = show scientific
-  show (ListVal listVal) = show listVal
+  show (ListVal listVal) = case allChar listVal of
+    True -> show $ map (\(CharVal c) -> c) listVal
+    False -> show listVal
+    where
+      isChar :: Val -> Bool
+      isChar (CharVal _) = True
+      isChar _ = False
+      allChar :: [Val] -> Bool
+      allChar = all isChar
   show (CharVal char) = show char
   show (VectorVal vec) = show vec
   show (Undefined) = "Undefined"
