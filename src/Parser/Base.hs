@@ -8,10 +8,18 @@ import Data.Attoparsec.Text
 import AST
 import Memory
 
+skipComment :: Parser ()
+skipComment = skipMany comment
+  where
+    comment = do
+      char ';'
+      skipWhile (\c -> not $ isEndOfLine c)
+      endOfLine
 
 lexeme :: Parser a -> Parser a
 lexeme p = do
   skipSpace
+  skipComment
   p
 
 varParser :: Parser Var
