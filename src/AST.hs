@@ -12,7 +12,6 @@ import Text.PrettyPrint.GenericPretty
 -- We need to represent a variable name
 type Var = String
 
-
 type FuncName = String
 
 data Expr
