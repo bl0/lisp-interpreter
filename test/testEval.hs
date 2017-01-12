@@ -35,6 +35,7 @@ main = defaultMainWithOpts
        , testProperty "Expr.Gt" testGtEval
        , testProperty "Expr.Ge" testGeEval
        , testProperty "Expr.Var" testVarEval
+       , testCase "Expr.Nil" testNilEval
        , testCase "Expr" testExprEval
        -- stmt
        , testProperty "Stmt.Skip" testSkipEval
@@ -153,6 +154,9 @@ testVarEval var n = allLetter var ==> result == truth
   where
     result = ee' (VarRef var) var n
     truth =  d2sval n
+
+testNilEval :: Assertion
+testNilEval = ee Nil @?= ListVal []
 
 -- a synthesize test of expression
 testExprEval :: Assertion
