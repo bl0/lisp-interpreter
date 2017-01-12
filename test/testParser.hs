@@ -11,11 +11,11 @@ import qualified Data.Text as Text
 import Data.Char
 
 -- my modules
+import Parser.Base
 import Parser.Expr
 import Parser.Stmt
-import Parser.Prog
-import Parser.Base
 import Parser.Func
+import Parser.Prog
 import AST
 import Common
 
@@ -63,6 +63,10 @@ main = defaultMainWithOpts
        , testCase     "Stmt.MakeVector" testMakeVectorParser
        , testCase     "Stmt.VectorSet" testVectorSetParser
        , testCase     "Stmt.Return" testReturnParser
+       -- func
+       , testCase     "Func" testFuncParser
+       -- prog
+       , testCase     "Program" testprogramParser
        ] mempty
 
 -- alias
@@ -306,3 +310,23 @@ testReturnParser = result @?= truth
   where
     result = parseOnly stmtParser "(return 2333)"
     truth = Right $ Return (i2slit 2333)
+
+testFuncParser :: Assertion
+testFuncParser = result @?= truth
+  where
+    result = parseOnly funcParser "(define (f x y) (return True))"
+    truth = Right $ Function "f" ["x", "y"] (Return TrueLit)
+
+testprogramParser :: Assertion
+testprogramParser = result @?= truth
+  where
+    result = programParser $ Text.pack $
+      "(define (f x y) (return True)) (define (main) (return (f 3 2)))"
+    truth = Right $ [
+      Function "f"
+        ["x", "y"]
+        (Return TrueLit),
+      Function "main"
+        []
+        (Return
+          (Call "f" [ScientificLit 3.0,ScientificLit 2.0]))]
