@@ -28,7 +28,7 @@ main = defaultMainWithOpts
        , testProperty "Expr.Add" testAddEval
        , testProperty "Expr.Sub" testSubEval
        , testProperty "Expr.Mult" testMultEval
-       , testProperty "Expr.Div" testDivEval
+       , testCase "Expr.Div" testDivEval
        , testProperty "Expr.EQ" testEQEval
        , testProperty "Expr.Lt" testLtEval
        , testProperty "Expr.Le" testLeEval
@@ -113,14 +113,10 @@ testMultEval n1 n2 = True ==> scientificValEq result truth
     result = ee $ Mult (d2slit n1) (d2slit n2)
     truth =  ScientificVal $ d2s $ n1 * n2
 
--- issue: forever loop when we use n1 and n2
-testDivEval :: Int -> Int -> Property
-testDivEval _ _ = True ==> scientificValEq result truth
-  where
-    result = ee $ Div (ScientificLit 2) (ScientificLit 2)
-    truth =  ScientificVal $ 1
-    -- result = ee $ Div (i2slit n1) (i2slit n2)
-    -- truth =  ScientificVal $ (i2s n1 / i2s n2)
+-- issue: forever loop when we use Property test !!
+testDivEval :: Assertion
+testDivEval = equivalance @?= True
+  where equivalance = scientificValEq (ee $ Div (d2slit 2) (d2slit 2)) (ScientificVal $ d2s $ 1)
 
 testEQEval :: Double -> Double -> Property
 testEQEval n1 n2 = True ==> result == truth
