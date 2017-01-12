@@ -150,7 +150,9 @@ repl history mem = do
         -- excute expression
         ":e":others -> excute_expr history mem $ Text.pack $ unwords others
         -- help
-        ":h":others -> outputStrLn repl_help_message
+        ":h":others -> do
+          outputStrLn repl_help_message
+          repl history mem
         -- command syntax error
         otherwise -> do
           outputStrLn $ "syntax error in: " ++ input ++ ".\n" ++ repl_help_message

@@ -109,25 +109,31 @@ eval_expr (Call funcName exprList) mem =
       -- memory returned.
       ret_mem = eval_stmt stmt total_mem in
       head $ Map.elems ret_mem
+    Just (LambdaVal var expr) ->
+      case tail exprList of
+        -- there is only one expression
+        [] -> let val = eval_expr (head exprList) mem
+                  new_mem = Map.insert var val mem in
+                  -- error $ "var=" ++ var ++ "\nval=" ++ show val ++ "\nexpr=" ++ show expr ++ "\nnew_mem=" ++ show new_mem
+                  eval_expr expr new_mem
+        -- there are more than one expression. error!
+        xs -> error $ "lambda expression only support one parameter and one expression but found " ++ show (length xs) ++ " in " ++ show exprList
 
 eval_expr (Let var expr1 expr2) mem =
   let v1 = eval_expr expr1 mem
       new_mem = Map.insert var v1 mem in
       eval_expr expr2 new_mem
 
-eval_expr (Lambda varList expr) mem = LambdaVal varList expr
+eval_expr (Lambda var expr) mem = LambdaVal var expr
 
-eval_expr (LambdaCall lambdaExpr exprList) mem =
+eval_expr (LambdaCall lambdaExpr expr) mem =
   case eval_expr lambdaExpr mem of
-    (LambdaVal varList exprInLambda) -> let
-      valList = map (\expr -> eval_expr expr mem) exprList
-      -- memory including function
-      new_mem = Map.fromList $ zip varList valList
-      -- memory including function and var
-      -- TODO more genieric method to merge function memory and param memory.
-      total_mem = Map.union new_mem mem in
-      eval_expr exprInLambda total_mem
-    val -> error $ "error: " ++ show(val) ++ "is not a BoolVal"
+    (LambdaVal var exprInLambda) -> let
+      val = eval_expr expr mem
+      -- memory including function and old mem
+      new_mem = Map.insert var val mem in
+      eval_expr exprInLambda new_mem
+    val -> error $ "error: " ++ show(val) ++ "is not a LambdaVal"
 
 
 -- Evaluation Statement.
