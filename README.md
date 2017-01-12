@@ -42,4 +42,4 @@
 
 ## 例程
 
-见testprogram目录。
+见examples目录。
