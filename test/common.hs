@@ -32,8 +32,11 @@ i2slit = ScientificLit . i2s
 i2sval :: Int -> Val
 i2sval = ScientificVal . i2s
 
+isCommonChar :: Char -> Bool
+isCommonChar c = (isLetter c) && (isAscii c) && (isPrint c)
+
 allLetter :: String -> Bool
-allLetter str = (str /= "") && (all isLetter str)
+allLetter str = (str /= "") && (all isCommonChar str)
 
 scientificValEq :: Val -> Val -> Bool
 scientificValEq (ScientificVal n1) (ScientificVal n2) = (n1 - n2 < 1e-9)

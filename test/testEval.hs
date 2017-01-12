@@ -22,9 +22,7 @@ main = defaultMainWithOpts
          testCase "Expr.True" testTrueEval
        , testCase "Expr.False" testFalseEval
        , testCase "Expr.Not" testNotEval
-       , testCase "Expr.Not'" testNotEval'
        , testCase "Expr.And" testAndEval
-       , testCase "Expr.And'" testAndEval'
        , testCase "Expr.Or" testOrEval
        , testProperty "Expr.Number" testNumberEval
        , testProperty "Expr.Add" testAddEval
@@ -54,11 +52,11 @@ ee expr = eval_expr expr Map.empty
 ee' :: Expr -> Var -> Double -> Val
 ee' expr var n = eval_expr expr (Map.singleton var $ d2sval n)
 -- eval expression with empty memory
-es :: Prog -> Mem
-es prog = eval prog Map.empty
+es :: Stmt -> Mem
+es stmt = eval_stmt stmt Map.empty
 -- eval statement with singleton memory
-es' :: Prog -> Var -> Val -> Mem
-es' prog var n = eval prog (Map.singleton var n)
+es' :: Stmt -> Var -> Val -> Mem
+es' stmt var n = eval_stmt stmt (Map.singleton var n)
 
 testTrueEval :: Assertion
 testTrueEval = ee TrueLit @?= BoolVal True
@@ -67,19 +65,29 @@ testFalseEval :: Assertion
 testFalseEval = ee FalseLit @?= BoolVal False
 
 testNotEval :: Assertion
-testNotEval = ee (Not FalseLit) @?= BoolVal True
-
-testNotEval' :: Assertion
-testNotEval' = ee (Not TrueLit) @?= BoolVal False
+testNotEval = allRight @?= True
+  where
+    allRight = c1 && c2
+    c1 = ee (Not FalseLit) == BoolVal True
+    c2 = ee (Not TrueLit) == BoolVal False
 
 testAndEval :: Assertion
-testAndEval = ee (And TrueLit FalseLit) @?= BoolVal False
-
-testAndEval' :: Assertion
-testAndEval' = ee (And TrueLit TrueLit) @?= BoolVal True
+testAndEval = allRight @?= True
+  where
+    allRight = c1 && c2 && c3 && c4
+    c1 = ee (And FalseLit FalseLit) == BoolVal False
+    c2 = ee (And TrueLit FalseLit) == BoolVal False
+    c3 = ee (And FalseLit TrueLit) == BoolVal False
+    c4 = ee (And TrueLit TrueLit) == BoolVal True
 
 testOrEval :: Assertion
-testOrEval = ee (Or TrueLit FalseLit) @?= BoolVal True
+testOrEval = allRight @?= True
+  where
+    allRight = c1 && c2 && c3 && c4
+    c1 = ee (Or FalseLit FalseLit) == BoolVal False
+    c2 = ee (Or TrueLit FalseLit) == BoolVal True
+    c3 = ee (Or FalseLit TrueLit) == BoolVal True
+    c4 = ee (Or TrueLit TrueLit) == BoolVal True
 
 testNumberEval :: Double -> Property
 testNumberEval n = True ==> result == truth
@@ -150,6 +158,7 @@ testVarEval var n = allLetter var ==> result == truth
     result = ee' (VarRef var) var n
     truth =  d2sval n
 
+-- a synthesize test of expression
 testExprEval :: Assertion
 testExprEval = result @?= truth
   where

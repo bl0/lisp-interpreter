@@ -5,7 +5,6 @@ import qualified Data.Vector as Vector
 import AST
 import Memory
 
-
 eval_expr :: Expr -> Mem -> Val
 
 eval_expr FalseLit _ = BoolVal False
