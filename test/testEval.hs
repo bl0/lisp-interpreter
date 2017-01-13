@@ -326,11 +326,11 @@ testMakeVectorEval var n = allLetter var && n >= 0 ==>
     result2 = es' (VarSet var $ i2slit n) ("var_" ++ var) (i2vval $ n)
     truth2 = Map.fromList [(var, i2vval n), ("var_" ++ var, i2vval n)]
 
-testVectorSetEval :: Var -> Int -> Int -> Double -> Property
-testVectorSetEval var n m r = (allLetter var) && (m >= 0) && (m < n) ==> result == truth
+testVectorSetEval :: Int -> Int -> Double -> Property
+testVectorSetEval n m r = (m >= 0) && (m < n) ==> result == truth
   where
-    result = es' (VectorSet var (i2slit m) (d2slit r)) var (i2vval $ n)
-    truth = Map.singleton var (is2vval n m r)
+    result = es' (VectorSet "a" (i2slit m) (d2slit r)) "a" (i2vval $ n)
+    truth = Map.singleton "a" (is2vval n m r)
 
 testReturnEval :: String -> Double -> Property
 testReturnEval var n = allLetter var ==> result == truth
