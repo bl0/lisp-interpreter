@@ -13,7 +13,7 @@ import AST
 import Memory
 import Eval.Expr
 import Eval.Prog
-import Common
+import Base
 
 main :: IO ()
 main = defaultMainWithOpts

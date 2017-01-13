@@ -4,9 +4,9 @@ import Control.Applicative
 import Control.Monad.State
 import System.Environment
 -- my modules
-import Gen.Program
+import Gen.Prog
 import FileIO
-import Parser.Program
+import Parser.Prog
 
 data Option = Option {
     inPath :: String,
@@ -49,16 +49,20 @@ parseHelp :: Parser String
 parseHelp = parseFlag "h"
 
 parseOption :: Parser Option
-parseOption = ph <|> p0 <|> p1 where
+parseOption = ph <|> p0 <|> p1 <|> p2 where
     p0 = do
-        i <- parseInPath
-        o <- parseOutPath
-        return (Option i o False)
+      i <- parseInPath
+      o <- parseOutPath
+      return (Option i o False)
 
     p1 = do
-        o <- parseOutPath
-        i <- parseInPath
-        return (Option i o False)
+      o <- parseOutPath
+      i <- parseInPath
+      return (Option i o False)
+
+    p2 = do
+      i <- parseInPath
+      return (Option i "" False)
 
     ph = do
       h <- parseHelp
