@@ -43,5 +43,5 @@ allLetter :: String -> Bool
 allLetter str = (str /= "") && (all isCommonChar str)
 
 scientificValEq :: Val -> Val -> Bool
-scientificValEq (ScientificVal n1) (ScientificVal n2) = (n1 - n2 < 1e-9)
+scientificValEq (ScientificVal n1) (ScientificVal n2) = (n1 - n2 < 1e-6)
 scientificValEq _ _ = error "should not compare bool value with scientific value"
