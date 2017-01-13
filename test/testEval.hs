@@ -43,6 +43,9 @@ main = defaultMainWithOpts
        , testProperty "Expr.String" testStringEval
        , testProperty "Expr.VectorRef" testVectorRefEval
        , testCase "Expr.Call" testCallEval
+       , testProperty "Expr.Let" testLetEval
+       , testProperty "Expr.Lambda" testLambdaEval
+       , testProperty "Expr.LambdaCall" testLambdaCallEval
        , testCase "Expr" testExprEval
        -- stmt
        , testProperty "Stmt.Skip" testSkipEval
@@ -216,6 +219,24 @@ testCallEval = allRight @?= True
     memLambda = Map.singleton "foo" (LambdaVal "a" (Add (VarRef "a") (ScientificLit 3)))
     resultLambda = eval_expr (Call "foo" [ScientificLit 2]) memLambda
     truthLambda = ScientificVal 5
+
+testLetEval :: Var -> Double -> Double -> Property
+testLetEval var n m = allLetter var ==> scientificValEq result truth
+  where
+    result = ee $ Let var (d2slit n) (Add (d2slit m) (VarRef var))
+    truth = d2sval (m + n)
+
+testLambdaEval :: Var -> Property
+testLambdaEval var = allLetter var ==> result == truth
+  where
+    result = ee $ Lambda var TrueLit
+    truth = LambdaVal var TrueLit
+
+testLambdaCallEval :: Double -> Double -> Property
+testLambdaCallEval n m = True ==> scientificValEq result truth
+  where
+    result = ee $ LambdaCall (Lambda "a" (Add (d2slit m) (VarRef "a"))) (d2slit n)
+    truth = d2sval (m + n)
 
 -- a synthesize test of expression
 testExprEval :: Assertion
