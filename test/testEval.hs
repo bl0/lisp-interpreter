@@ -53,6 +53,8 @@ main = defaultMainWithOpts
        , testProperty "Stmt.If" testIfEval
        , testProperty "Stmt.While" testWhileEval
        , testProperty "Stmt.StmtList" testStmtListEval
+       , testProperty "Stmt.MakeVector" testMakeVectorEval
+       , testProperty "Stmt.VectorSet" testVarSetEval
        , testProperty "Stmt.Return" testReturnEval
        ] mempty
 
@@ -307,6 +309,22 @@ testStmtListEval var n = allLetter var ==>
     truth = if (n <= 0)
       then Map.fromList [(var, i2sval n), ("less_than_0", BoolVal True)]
       else Map.fromList [(var, i2sval n), ("great_equal_0", BoolVal True)]
+
+testMakeVectorEval :: Var -> Int -> Property
+testMakeVectorEval var n = allLetter var && n >= 0 ==>
+  result == truth && result1 == truth -- && result2 == truth2
+  where
+    result = es $ MakeVector var (i2slit n)
+    truth = Map.singleton var (i2vval n)
+    result1 = es' (MakeVector var $ i2slit n) var (i2vval $ n + 1)
+    result2 = es' (VarSet var $ i2slit n) ("var_" ++ var) (i2vval $ n)
+    truth2 = Map.fromList [(var, i2vval n), ("var_" ++ var, i2vval n)]
+
+testVectorSet :: Var -> Int -> Int -> Double -> Property
+testVectorSet var n m r = (allLetter var) && (m >= 0) && (m < n) ==> result == truth
+  where
+    result = es' (VectorSet var (i2slit m) (d2slit r)) var (i2vval $ n)
+    truth = Map.singleton var (is2vval n m r)
 
 testReturnEval :: String -> Double -> Property
 testReturnEval var n = allLetter var ==> result == truth

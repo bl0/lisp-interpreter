@@ -35,6 +35,14 @@ i2slit = ScientificLit . i2s
 -- int to ScientificVal
 i2sval :: Int -> Val
 i2sval = ScientificVal . i2s
+-- int to VectorVal with Undefined value
+i2vval :: Int -> Val
+i2vval n = let vec = Vector.replicate n Undefined in VectorVal vec
+
+is2vval :: Int -> Int -> Double -> Val
+is2vval n m r = VectorVal (Vector.fromList list)
+  where
+    list = (replicate m Undefined) ++ [d2sval r] ++ (replicate (n - m - 1) Undefined)
 
 isCommonChar :: Char -> Bool
 isCommonChar c = (isLetter c) && (isAscii c) && (isPrint c)
