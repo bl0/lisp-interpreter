@@ -53,6 +53,7 @@ main = defaultMainWithOpts
        , testProperty "Stmt.If" testIfEval
        , testProperty "Stmt.While" testWhileEval
        , testProperty "Stmt.StmtList" testStmtListEval
+       , testProperty "Stmt.Return" testReturnEval
        ] mempty
 
 -- alias
@@ -306,3 +307,9 @@ testStmtListEval var n = allLetter var ==>
     truth = if (n <= 0)
       then Map.fromList [(var, i2sval n), ("less_than_0", BoolVal True)]
       else Map.fromList [(var, i2sval n), ("great_equal_0", BoolVal True)]
+
+testReturnEval :: String -> Double -> Property
+testReturnEval var n = allLetter var ==> result == truth
+  where
+    result = es' (Return (VarRef var)) var (d2sval n)
+    truth = Map.singleton "returnValue" (d2sval n)
