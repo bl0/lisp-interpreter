@@ -43,6 +43,9 @@ main = defaultMainWithOpts
        , testProperty "Expr.String" testStringEval
        , testProperty "Expr.VectorRef" testVectorRefEval
        , testCase "Expr.Call" testCallEval
+       , testProperty "Expr.Let" testLetEval
+       , testProperty "Expr.Lambda" testLambdaEval
+       , testProperty "Expr.LambdaCall" testLambdaCallEval
        , testCase "Expr" testExprEval
        -- stmt
        , testProperty "Stmt.Skip" testSkipEval
@@ -50,6 +53,9 @@ main = defaultMainWithOpts
        , testProperty "Stmt.If" testIfEval
        , testProperty "Stmt.While" testWhileEval
        , testProperty "Stmt.StmtList" testStmtListEval
+       , testProperty "Stmt.MakeVector" testMakeVectorEval
+       , testProperty "Stmt.VectorSet" testVarSetEval
+       , testProperty "Stmt.Return" testReturnEval
        ] mempty
 
 -- alias
@@ -217,6 +223,24 @@ testCallEval = allRight @?= True
     resultLambda = eval_expr (Call "foo" [ScientificLit 2]) memLambda
     truthLambda = ScientificVal 5
 
+testLetEval :: Var -> Double -> Double -> Property
+testLetEval var n m = allLetter var ==> scientificValEq result truth
+  where
+    result = ee $ Let var (d2slit n) (Add (d2slit m) (VarRef var))
+    truth = d2sval (m + n)
+
+testLambdaEval :: Var -> Property
+testLambdaEval var = allLetter var ==> result == truth
+  where
+    result = ee $ Lambda var TrueLit
+    truth = LambdaVal var TrueLit
+
+testLambdaCallEval :: Double -> Double -> Property
+testLambdaCallEval n m = True ==> scientificValEq result truth
+  where
+    result = ee $ LambdaCall (Lambda "a" (Add (d2slit m) (VarRef "a"))) (d2slit n)
+    truth = d2sval (m + n)
+
 -- a synthesize test of expression
 testExprEval :: Assertion
 testExprEval = result @?= truth
@@ -285,3 +309,25 @@ testStmtListEval var n = allLetter var ==>
     truth = if (n <= 0)
       then Map.fromList [(var, i2sval n), ("less_than_0", BoolVal True)]
       else Map.fromList [(var, i2sval n), ("great_equal_0", BoolVal True)]
+
+testMakeVectorEval :: Var -> Int -> Property
+testMakeVectorEval var n = allLetter var && n >= 0 ==>
+  result == truth && result1 == truth -- && result2 == truth2
+  where
+    result = es $ MakeVector var (i2slit n)
+    truth = Map.singleton var (i2vval n)
+    result1 = es' (MakeVector var $ i2slit n) var (i2vval $ n + 1)
+    result2 = es' (VarSet var $ i2slit n) ("var_" ++ var) (i2vval $ n)
+    truth2 = Map.fromList [(var, i2vval n), ("var_" ++ var, i2vval n)]
+
+testVectorSet :: Var -> Int -> Int -> Double -> Property
+testVectorSet var n m r = (allLetter var) && (m >= 0) && (m < n) ==> result == truth
+  where
+    result = es' (VectorSet var (i2slit m) (d2slit r)) var (i2vval $ n)
+    truth = Map.singleton var (is2vval n m r)
+
+testReturnEval :: String -> Double -> Property
+testReturnEval var n = allLetter var ==> result == truth
+  where
+    result = es' (Return (VarRef var)) var (d2sval n)
+    truth = Map.singleton "returnValue" (d2sval n)
