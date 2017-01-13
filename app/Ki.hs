@@ -11,8 +11,8 @@ import qualified Data.Text as Text
 import System.IO
 import System.Exit
 import qualified Data.Map as Map
-import qualified Text.PrettyPrint as PrettyPrint
-import qualified Text.PrettyPrint.GenericPretty as GenericPretty
+import qualified Text.PrettyPrint as PP
+import qualified Text.PrettyPrint.GenericPretty as GP
 import System.Console.Haskeline
 
 -- my module
@@ -61,7 +61,7 @@ data History = FunctionDefine Func
   | Statement Stmt
   | Expression Expr
   | NoHistory
-  deriving (Show, Read, Eq, GenericPretty.Out, GenericPretty.Generic)
+  deriving (Show, Read, Eq, GP.Out, GP.Generic)
 
 -- excute expression
 excute_expr :: History -> Mem -> Text.Text -> InputT IO()
@@ -72,7 +72,7 @@ excute_expr history mem expr =
     (Left str) -> do -- error handy
       outputStrLn $ error_msg expr str
       repl history mem
-    -- syntax right, eval the stmt, update stmt and memory, then run again
+    -- syntax right, eval the expression, then run again
     (Right expr) -> do
       let result = eval_expr expr mem in do
         outputStrLn $ show result
@@ -84,7 +84,7 @@ excute_stmt history mem stmt =
   let stmt_or_str = AttoText.parseOnly stmtParser stmt in do
   case stmt_or_str of
     -- syntax error
-    (Left str) -> do -- error handy
+    (Left str) -> do
       outputStrLn $ error_msg stmt str
       repl history mem
     (Right (Return expr)) -> do
@@ -111,13 +111,13 @@ excute_func history mem func =
         outputStrLn $ mempp new_mem
         repl (FunctionDefine func) new_mem
 
--- output the parse result of last interpret
+-- output the parse result of last history
 show_tree :: History -> Mem -> InputT IO()
 show_tree NoHistory mem = do
   outputStrLn "No history instruction!"
   repl NoHistory mem
 show_tree history mem = do
-  outputStrLn $ PrettyPrint.render $ GenericPretty.doc $ history
+  outputStrLn $ PP.render $ GP.doc $ history
   repl history mem
 
 repl_help_message :: String
@@ -139,6 +139,7 @@ repl history mem = do
     Nothing -> return ()
     Just input -> do
       case words input of
+        [] -> repl history mem
         -- excute statement
         ":i":others -> excute_stmt history mem $ Text.pack $ unwords others
         -- tree
@@ -155,7 +156,7 @@ repl history mem = do
           repl history mem
         -- command syntax error
         otherwise -> do
-          outputStrLn $ "syntax error in: " ++ input ++ ".\n" ++ repl_help_message
+          outputStrLn $ concat ["syntax error in:\n", input, ".\n", repl_help_message]
           repl history mem
 
 interpret :: ArgOptions -> IO ()
@@ -180,7 +181,7 @@ interpret (ArgOptions "" o t False) = do
     -- syntax error
     (Left str) -> putStrLn $ error_msg program str
     -- syntax right, output the parse tree.
-    (Right stmt) -> writeToFile o $ PrettyPrint.render $ GenericPretty.doc $ stmt
+    (Right stmt) -> writeToFile o $ PP.render $ GP.doc $ stmt
 interpret _ = putStrLn "syntax error."
 
 main :: IO ()

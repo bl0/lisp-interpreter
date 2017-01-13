@@ -53,8 +53,8 @@ instance Show Val where
   show (CharVal char) = show char
   show (VectorVal vec) = show vec
   show (Undefined) = "Undefined"
-  show (FunctionVal varList stmt) = "Function:\\ " ++ show varList ++ " -> " ++ show stmt
-  show (LambdaVal var expr) = "Anonymous_function:\\" ++ var ++ " -> " ++ show expr
+  show (FunctionVal varList stmt) = "<Function>"
+  show (LambdaVal var expr) = "<Anonymous function>"
 
 -- A memory is a mapping from variable names to values
 type Mem = Map.Map Var Val
