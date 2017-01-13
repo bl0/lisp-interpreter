@@ -46,7 +46,6 @@ data Expr
   | Car Expr
   | Cdr Expr
   | CharLit Char
-  -- TODO show string
   | StringLit String
   -- Array
   | VectorRef Var Expr

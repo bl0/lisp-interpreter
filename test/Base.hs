@@ -1,4 +1,4 @@
-module Common where
+module Base where
 
 -- my modules
 import AST
