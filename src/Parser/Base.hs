@@ -23,7 +23,10 @@ lexeme p = do
   p
 
 varParser :: Parser Var
-varParser = lexeme $ many1 letter
+varParser = do
+  c <- lexeme $ choice [letter, char '_']
+  s <- many $ choice [digit, letter, char '_']
+  return $ c:s
 
 funcNameParser :: Parser FuncName
 funcNameParser = varParser

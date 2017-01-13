@@ -1,4 +1,4 @@
-## 执行方法
+### 执行方法
 
 1. 安装`stack`，参见[stack install_and_upgrade](https://docs.haskellstack.org/en/stable/install_and_upgrade/)。
 
@@ -40,6 +40,6 @@
 
 5. 运行测试覆盖率分析：`stack build; stack clean; stack test --coverage`
 
-## 例程
+### 例程
 
 见examples目录。
