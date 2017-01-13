@@ -3,6 +3,7 @@ module Base where
 -- my modules
 import AST
 import qualified Data.Text as Text
+import qualified Data.Vector as Vector
 import Data.Scientific
 import Data.Char
 import Memory
@@ -19,6 +20,9 @@ d2s = fromFloatDigits
 -- double to ScientificVal
 d2sval :: Double -> Val
 d2sval = ScientificVal . fromFloatDigits
+-- string to VectorVal
+str2vval :: String -> Val
+str2vval = VectorVal . Vector.fromList . map CharVal
 -- int to Text
 i2t :: Int -> Text.Text
 i2t = Text.pack . show

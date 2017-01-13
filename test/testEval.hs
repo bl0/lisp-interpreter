@@ -28,13 +28,21 @@ main = defaultMainWithOpts
        , testProperty "Expr.Add" testAddEval
        , testProperty "Expr.Sub" testSubEval
        , testProperty "Expr.Mult" testMultEval
-       , testProperty "Expr.Div" testDivEval
+       , testCase "Expr.Div" testDivEval
        , testProperty "Expr.EQ" testEQEval
        , testProperty "Expr.Lt" testLtEval
        , testProperty "Expr.Le" testLeEval
        , testProperty "Expr.Gt" testGtEval
        , testProperty "Expr.Ge" testGeEval
        , testProperty "Expr.Var" testVarEval
+       , testCase "Expr.Nil" testNilEval
+       , testCase "Expr.Car" testCarEval
+       , testCase "Expr.Cdr" testCdrEval
+       , testCase "Expr.Cons" testConsEval
+       , testProperty "Expr.Char" testCharEval
+       , testProperty "Expr.String" testStringEval
+       , testProperty "Expr.VectorRef" testVectorRefEval
+       , testCase "Expr.Call" testCallEval
        , testCase "Expr" testExprEval
        -- stmt
        , testProperty "Stmt.Skip" testSkipEval
@@ -48,9 +56,12 @@ main = defaultMainWithOpts
 -- eval expression with empty memory
 ee :: Expr -> Val
 ee expr = eval_expr expr Map.empty
--- eval expression with singleton memory
+-- eval expression with singleton memory with double
 ee' :: Expr -> Var -> Double -> Val
 ee' expr var n = eval_expr expr (Map.singleton var $ d2sval n)
+-- eval expression with singleton memory with sring
+ee'' :: Expr -> Var -> String -> Val
+ee'' expr var str = eval_expr expr (Map.singleton var $ str2vval str)
 -- eval expression with empty memory
 es :: Stmt -> Mem
 es stmt = eval_stmt stmt Map.empty
@@ -113,14 +124,10 @@ testMultEval n1 n2 = True ==> scientificValEq result truth
     result = ee $ Mult (d2slit n1) (d2slit n2)
     truth =  ScientificVal $ d2s $ n1 * n2
 
--- issue: forever loop when we use n1 and n2
-testDivEval :: Int -> Int -> Property
-testDivEval _ _ = True ==> scientificValEq result truth
-  where
-    result = ee $ Div (ScientificLit 2) (ScientificLit 2)
-    truth =  ScientificVal $ 1
-    -- result = ee $ Div (i2slit n1) (i2slit n2)
-    -- truth =  ScientificVal $ (i2s n1 / i2s n2)
+-- issue: forever loop when we use Property test !!
+testDivEval :: Assertion
+testDivEval = equivalance @?= True
+  where equivalance = scientificValEq (ee $ Div (d2slit 2) (d2slit 2)) (ScientificVal $ d2s $ 1)
 
 testEQEval :: Double -> Double -> Property
 testEQEval n1 n2 = True ==> result == truth
@@ -157,6 +164,58 @@ testVarEval var n = allLetter var ==> result == truth
   where
     result = ee' (VarRef var) var n
     truth =  d2sval n
+
+testNilEval :: Assertion
+testNilEval = ee Nil @?= ListVal []
+
+testCarEval :: Assertion
+testCarEval = result @?= truth
+  where
+    result = ee $ Car $ Cons TrueLit Nil
+    truth = BoolVal True
+
+testCdrEval :: Assertion
+testCdrEval = result @?= truth
+  where
+    result = ee $ Cdr $ Cons TrueLit Nil
+    truth = ListVal []
+
+testConsEval :: Assertion
+testConsEval = result @?= truth
+  where
+    result = ee $ Cons TrueLit $ Cons FalseLit Nil
+    truth = ListVal [BoolVal True, BoolVal False]
+
+testCharEval :: Char -> Property
+testCharEval c = True ==> result == truth
+  where
+    result = ee $ CharLit c
+    truth = CharVal c
+
+testStringEval :: String -> Property
+testStringEval str = True ==> result == truth
+  where
+    result = ee $ StringLit str
+    truth = ListVal [CharVal c | c <- str]
+
+testVectorRefEval :: Var -> String -> Property
+testVectorRefEval var xs = allLetter var ==> result == truth
+  where
+    result = [ee'' (VectorRef var (i2slit index)) var xs | index <- [0..length xs - 1]]
+    truth = [CharVal ch | ch <- xs]
+
+testCallEval :: Assertion
+testCallEval = allRight @?= True
+  where
+    allRight = (resultNormal == truthNormal) && (resultLambda == truthLambda)
+    -- test for normal function
+    memNormal = Map.singleton "foo" (FunctionVal ["a", "b"] (Return $ Add (VarRef "a") (VarRef "b")))
+    resultNormal = eval_expr (Call "foo" [ScientificLit 2, ScientificLit 3]) memNormal
+    truthNormal = ScientificVal 5
+    -- test for lambda function
+    memLambda = Map.singleton "foo" (LambdaVal "a" (Add (VarRef "a") (ScientificLit 3)))
+    resultLambda = eval_expr (Call "foo" [ScientificLit 2]) memLambda
+    truthLambda = ScientificVal 5
 
 -- a synthesize test of expression
 testExprEval :: Assertion

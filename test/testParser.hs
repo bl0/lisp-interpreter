@@ -17,7 +17,7 @@ import Parser.Stmt
 import Parser.Func
 import Parser.Prog
 import AST
-import Common
+import Base
 
 main :: IO ()
 main = defaultMainWithOpts
