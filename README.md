@@ -1,3 +1,12 @@
+# Lisp Intepreter
+
+---
+
+[![Build Status](https://travis-ci.com/b-liu14/lisp-interpreter.svg?token=T9dFvqXR4JmmQPEt9A86&branch=master)](https://travis-ci.com/b-liu14/lisp-interpreter)
+
+A lisp-like languange intepreter implemented in Haskell
+
+
 ### 执行方法
 
 1. 安装`stack`，参见[stack install_and_upgrade](https://docs.haskellstack.org/en/stable/install_and_upgrade/)。
