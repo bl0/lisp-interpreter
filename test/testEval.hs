@@ -54,8 +54,10 @@ main = defaultMainWithOpts
        , testProperty "Stmt.While" testWhileEval
        , testProperty "Stmt.StmtList" testStmtListEval
        , testProperty "Stmt.MakeVector" testMakeVectorEval
-       , testProperty "Stmt.VectorSet" testVarSetEval
+       , testProperty "Stmt.VectorSet" testVectorSetEval
        , testProperty "Stmt.Return" testReturnEval
+       -- prog
+       , testCase "Program" testProgramEval
        ] mempty
 
 -- alias
@@ -74,6 +76,9 @@ es stmt = eval_stmt stmt Map.empty
 -- eval statement with singleton memory
 es' :: Stmt -> Var -> Val -> Mem
 es' stmt var n = eval_stmt stmt (Map.singleton var n)
+-- eval program with singleton memory
+ep :: Prog -> Mem
+ep prog = eval prog Map.empty
 
 testTrueEval :: Assertion
 testTrueEval = ee TrueLit @?= BoolVal True
@@ -297,6 +302,7 @@ testStmtListEval :: Var -> Int -> Property
 testStmtListEval var n = allLetter var ==>
   result == truth
   where
+    -- test for statement
     result = es (
       StmtList [
         (VarSet var (i2slit n)),
@@ -320,8 +326,8 @@ testMakeVectorEval var n = allLetter var && n >= 0 ==>
     result2 = es' (VarSet var $ i2slit n) ("var_" ++ var) (i2vval $ n)
     truth2 = Map.fromList [(var, i2vval n), ("var_" ++ var, i2vval n)]
 
-testVectorSet :: Var -> Int -> Int -> Double -> Property
-testVectorSet var n m r = (allLetter var) && (m >= 0) && (m < n) ==> result == truth
+testVectorSetEval :: Var -> Int -> Int -> Double -> Property
+testVectorSetEval var n m r = (allLetter var) && (m >= 0) && (m < n) ==> result == truth
   where
     result = es' (VectorSet var (i2slit m) (d2slit r)) var (i2vval $ n)
     truth = Map.singleton var (is2vval n m r)
@@ -331,3 +337,9 @@ testReturnEval var n = allLetter var ==> result == truth
   where
     result = es' (Return (VarRef var)) var (d2sval n)
     truth = Map.singleton "returnValue" (d2sval n)
+
+testProgramEval :: Assertion
+testProgramEval = result @?= truth
+  where
+    result = ep [Function "f" ["x", "y"] (Return TrueLit), Function "main" [] (Return $ Call "f" [d2slit 2, d2slit 2])]
+    truth = Map.singleton "returnValue" (BoolVal True)
