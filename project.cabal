@@ -7,7 +7,7 @@ license:             BSD3
 license-file:        LICENSE
 author:              Kevin
 maintainer:          b_liu14@163.com
-copyright:           2016 Liu Bin 
+copyright:           2016 Liu Bin
 category:            Web
 build-type:          Simple
 extra-source-files:  README.md

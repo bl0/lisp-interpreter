@@ -20,10 +20,16 @@ cache:
   - $HOME/.stack
 
 # Ensure necessary system libraries are present
+# addons:
+#   apt:
+#     packages:
+#       - libgmp-dev
 addons:
   apt:
+    sources:
+    - hvr-ghc
     packages:
-      - libgmp-dev
+    - ghc-7.10.2
 
 before_install:
 # Download and unpack the stack executable
@@ -31,10 +37,16 @@ before_install:
 - export PATH=$HOME/.local/bin:$PATH
 - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
 
+# install:
+# # Build dependencies
+# - stack --no-terminal --install-ghc test --only-dependencies
 install:
-# Build dependencies
-- stack --no-terminal --install-ghc test --only-dependencies
+  - travis_wait stack --no-terminal --skip-ghc-check setup
+  - travis_wait stack --no-terminal --skip-ghc-check test --only-snapshot
 
+
+# script:
+# # Build the package, its tests, and its docs and run the tests
+# - stack --no-terminal test --haddock --no-haddock-deps
 script:
-# Build the package, its tests, and its docs and run the tests
-- stack --no-terminal test --haddock --no-haddock-deps
+  - stack --no-terminal --skip-ghc-check test
