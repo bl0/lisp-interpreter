@@ -1,3 +1,4 @@
 # This repo_token should be consistent with the one on the coveralls.io,
 # thus the coveralls.io could recognize the test result we send to it.
+# TODO: The repo_token does not work, the coverage data is reported to another repo on cover io.
 repo_token: CjA5ZZoAg23SdLvyFWYsIsXrcnDPZtnpj
