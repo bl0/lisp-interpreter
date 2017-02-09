@@ -39,7 +39,7 @@ argParser = ArgOptions
         <> long "instructions"
         <> metavar "INPUT_PATH"
         <> value ""
-        <> help "path of instructions to excute." )
+        <> help "path of instructions to execute." )
      <*> strOption
          ( short 'o'
         <> long "output"
@@ -63,9 +63,9 @@ data History = FunctionDefine Func
   | NoHistory
   deriving (Show, Read, Eq, GP.Out, GP.Generic)
 
--- excute expression
-excute_expr :: History -> Mem -> Text.Text -> InputT IO()
-excute_expr history mem expr =
+-- execute expression
+execute_expr :: History -> Mem -> Text.Text -> InputT IO()
+execute_expr history mem expr =
   let expr_or_str = AttoText.parseOnly exprParser expr in do
   case expr_or_str of
     -- syntax error
@@ -78,9 +78,9 @@ excute_expr history mem expr =
         outputStrLn $ show result
         repl (Expression expr) mem
 
--- excute statement
-excute_stmt :: History -> Mem -> Text.Text -> InputT IO()
-excute_stmt history mem stmt =
+-- execute statement
+execute_stmt :: History -> Mem -> Text.Text -> InputT IO()
+execute_stmt history mem stmt =
   let stmt_or_str = AttoText.parseOnly stmtParser stmt in do
   case stmt_or_str of
     -- syntax error
@@ -96,9 +96,9 @@ excute_stmt history mem stmt =
         outputStrLn $ mempp new_mem
         repl (Statement stmt) new_mem
 
--- excute function
-excute_func :: History -> Mem -> Text.Text -> InputT IO()
-excute_func history mem func =
+-- execute function
+execute_func :: History -> Mem -> Text.Text -> InputT IO()
+execute_func history mem func =
   let func_or_str = AttoText.parseOnly funcParser func in do
   case func_or_str of
     -- syntax error
@@ -124,9 +124,9 @@ repl_help_message :: String
 repl_help_message = " \n" ++
   "Usage:\n" ++
   "  :h                      Show this help text \n" ++
-  "  :i <stmt>               Excute Statement \n" ++
+  "  :i <stmt>               Execute Statement \n" ++
   "  :f <func>               Define Function \n" ++
-  "  :e <expr>               Excute Expression \n" ++
+  "  :e <expr>               execute Expression \n" ++
   "  :t                      Print Abstract Semantic Tree of Last Function/Statement/Expression \n" ++
   "  :q                      Quit \n" ++
   " "
@@ -140,20 +140,22 @@ repl history mem = do
     Just input -> do
       case words input of
         [] -> repl history mem
-        -- excute statement
-        ":i":others -> excute_stmt history mem $ Text.pack $ unwords others
+        -- execute statement
+        ":i":others -> execute_stmt history mem $ Text.pack $ unwords others
         -- tree
         ":t":others -> show_tree history mem
         -- quit
         ":q":others -> outputStrLn "Bye~"
         -- define function
-        ":f":others -> excute_func history mem $ Text.pack $ unwords others
-        -- excute expression
-        ":e":others -> excute_expr history mem $ Text.pack $ unwords others
+        ":f":others -> execute_func history mem $ Text.pack $ unwords others
+        -- execute expression
+        ":e":others -> execute_expr history mem $ Text.pack $ unwords others
         -- help
         ":h":others -> do
           outputStrLn repl_help_message
           repl history mem
+        -- clean all memory.
+        ":c":others -> repl history Map.empty
         -- command syntax error
         otherwise -> do
           outputStrLn $ concat ["syntax error in:\n", input, ".\n", repl_help_message]
@@ -165,7 +167,7 @@ interpret (ArgOptions _ _ _ True) = do
   putStrLn "Enter REPL mode"
   runInputT defaultSettings $ repl NoHistory Map.empty
 
--- excute instruction
+-- execute instruction
 interpret (ArgOptions i o "" False) = do
   program <- readWholeFile i
   case programParser program of
