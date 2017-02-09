@@ -9,9 +9,9 @@ A lisp-like language interpreter implemented in Haskell
 
 ### How to execute
 
-1. Install `stack`. refer to [stack install_and_upgrade](https://docs.haskellstack.org/en/stable/install_and_upgrade/)。
+1. Install `stack`. refer to [stack install_and_upgrade](https://docs.haskellstack.org/en/stable/install_and_upgrade/).
 
-2. REPL mode.
+2. REPL mode: `stack build && stack exec ki -- -r`.
 
    * Execute statement: `:i <stmt>`
    * Execute expression: `:e <expr>`
@@ -56,7 +56,7 @@ A lisp-like language interpreter implemented in Haskell
     3.2 Just execute：`stack runhaskell -- app/kc.hs ARGS`. The meaning of `ARGS` is same with above description.
 
 
-4. Run the test： `stack test`。If you want to test parser or eval seperately, execute `stack test project:parser-test` or `stack test project:eval-test`.
+4. Run the test： `stack test`.If you want to test parser or eval seperately, execute `stack test project:parser-test` or `stack test project:eval-test`.
 
 5. Run the test with coverage: `stack build; stack clean; stack test --coverage`
 
@@ -209,7 +209,7 @@ Please refer to final_project.pdf(Chinese).
 *    Define `(lambda variable expression)`
 *    Call `(expression expression)`
 
-      ​
+     ​
 
 ### examples
 
