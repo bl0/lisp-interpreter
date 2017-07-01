@@ -1,1 +1,4 @@
 .stack-work/ 
+*.tix
+*.DS_Store
+

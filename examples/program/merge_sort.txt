@@ -1,0 +1,4 @@
+; (define (isempty x) (return (= x 3)))
+
+(define (f x y) (return (x y))) ; define a function to use lambda
+(define (main) (return (f (lambda x x) 3))) ; call f to use lambda
